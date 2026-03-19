@@ -4,7 +4,7 @@ Team Members:
 1.  Carlos Cordoba 	S352147	S352147@students.cdu.edu.au
 2.  Umme Habiba	S373967	
 3.  Gaurab Gaihre	S387897	S387897@students.cdu.edu.au
-4.  Pralin Dhungana	S395785	
+4.  Pralin Dhungana	S395785 S395785@students.cdu.edu.au
 
 THEME CHOSEN:
 Theme 3. Remote Housing Crisis
@@ -19,13 +19,16 @@ Section 1. Terms and conditions of group work
 * We all commit to doing our own work. Where AI is used, for example to generate code or check the code for correctness, we will make a note attributing that part of the work to AI and which AI is used. 
 
 
-
-
-
-
-
-
 Section 2 Provisional milestones and checkpoints
 
+Group Contract: Due 20/03 @ 14:00 (Final commits today).
+Project Report 1: Due 16/04 @ 14:00 (Draft review by 11/04).
+System Development: Weekly progress syncs through 14/05.
+Project Report 2: Due 28/05 @ 14:00 (Final integration by 25/05).
 
+Team Checkpoints
+
+Weekly Meeting: Every Tuesday at 5:00 PM on Microsoft Teams.
+GitHub Uploads: Individual work must be posted 5 days before any deadline.
+Conflict Rule: If a member is silent for over 72 hours, we document it on Teams and notify the lecturer.
 
