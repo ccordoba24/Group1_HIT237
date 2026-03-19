@@ -25,13 +25,6 @@ Section 1. Terms and conditions of group work
 
 
 
-
-
-
-
-
-
-
 Section 2 Provisional milestones and checkpoints
 
 
