@@ -10,8 +10,9 @@ THEME CHOSEN:
 Theme 3. Remote Housing Crisis
 
 Section 1. Terms and conditions of group work
- 
 
+* Group allocation will follow a basic separation of tasks as needed for the assignment. For example, different students will complete different pages of the website project. Also, different students will be allocated different parts of the research needed for our theme, Remote Housing Crisis, following the guide provided in the Unit notes.
+* 
 
 
 
