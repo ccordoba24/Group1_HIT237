@@ -21,14 +21,14 @@ Section 1. Terms and conditions of group work
 
 Section 2 Provisional milestones and checkpoints
 
-Group Contract: Due 20/03 @ 14:00 (Final commits today).
-Project Report 1: Due 16/04 @ 14:00 (Draft review by 11/04).
-System Development: Weekly progress syncs through 14/05.
-Project Report 2: Due 28/05 @ 14:00 (Final integration by 25/05).
+* Group Contract: Due 20/03 @ 14:00 (Final commits today).
+* Project Report 1: Due 16/04 @ 14:00 (Draft review by 11/04).
+* System Development: Weekly progress syncs through 14/05.
+* Project Report 2: Due 28/05 @ 14:00 (Final integration by 25/05).
 
 Team Checkpoints
 
-Weekly Meeting: Every Tuesday at 5:00 PM on Microsoft Teams.
-GitHub Uploads: Individual work must be posted 5 days before any deadline.
-Conflict Rule: If a member is silent for over 72 hours, we document it on Teams and notify the lecturer.
+* Weekly Meeting: Every Tuesday at 5:00 PM on Microsoft Teams.
+* GitHub Uploads: Individual work must be posted 5 days before any deadline.
+* Conflict Rule: If a member is silent for over 72 hours, we document it on Teams and notify the lecturer.
 
