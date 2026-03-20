@@ -31,8 +31,8 @@ Section 2 Provisional milestones and checkpoints
 * Project Report 2: Due 28/05 @ 14:00 (Final integration by 25/05).
 
 Team Checkpoints
-*Internal Review: The team will review all work at least one week before each deadline to ensure proper integration and completion.
 * Weekly Meeting: Every Tuesday at 5:00 PM on Microsoft Teams.
+* Internal Review: The team will review all work at least one week before each deadline to ensure proper integration and completion.
 * GitHub Uploads: Individual work must be posted 5 days before any deadline.
 * Conflict Rule: If a member is silent for over 72 hours, we document it on Teams and notify the lecturer.
 
