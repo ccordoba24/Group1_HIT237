@@ -1,6 +1,6 @@
 # Group1_HIT237
 
-# Group Members: Pralin Dhungana, Habiba Habiba, Gaurab Gaihre, Carlos Cordoba
+## Group Members: Pralin Dhungana, Habiba Habiba, Gaurab Gaihre, Carlos Cordoba
 
 ### What is this repository for? ###
 
