@@ -24,3 +24,13 @@ As part of our project, we are developing an app to help tackle the current hous
 # Target Users (Persona)
 
 We aim as likely users of the app to be mainly both NT public housing clients and the various contractors and repairmen who will bid for work via the app. Other users will be staff at the NT Department of Housing, Local Government and Community. 
+
+# Hypothesis
+
+An accessable user friendly, visually appealing and efficient app will increase interactions and user engagement between tenants and tradsmen. Tradsmen will do the upkeep to ensure these assests the NT government owns remain viable and ready to use again with new tenants.
+
+# Conclusion
+
+The web application is designed to provide a user-friendly and efficient platform for managing tenant–maintenance interactions. Additionally, the platform supports the ongoing upkeep of Northern Territory Government assets, ensuring they remain in suitable condition for future tenancy. By maintenance efficiency and asset readiness, particularly in remote areas, this initiative contributes to broader efforts to alleviate the housing crisis in the Northern Territory.
+
+
