@@ -152,6 +152,7 @@ Any and all major decisions made (such as model design, QuerySet implementation,
 - rationale for decision and its implications
 
 ii. Revisions of Decisions
+
 Decisions will be revised as necessary, and the old decision will be archived with links to the new entry, thus capturing the evolution of the system design.
 
 iii. References in Code
