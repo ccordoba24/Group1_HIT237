@@ -22,9 +22,13 @@ Theme 3. Remote Housing Crisis
 Role-Based Task Allocation
 
 The team utilizes predefined roles to clarify individual responsibility as follows:
+
 Architect: (responsible for system architecture, Github management, and integration) - Carlos Cordoba
+
 Documentation Lead: (responsible for report preparation and Architectural Decision Records preparation) - Gaurab Gaihre
+
 Feature Lead: (responsible for developing the application features) - Pralin Dhungana
+
 History/Tracking Lead: (responsible for commit tracking and progress documentation) - Umme Habiba
 
 The Architect will be responsible for maintaining the overall system architecture, organizing the repository, and ensuring successful integration.
