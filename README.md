@@ -1,36 +1,90 @@
 # Group1_HIT237
 
-### Group Members: Pralin Dhungana, Habiba Habiba, Gaurab Gaihre, Carlos Cordoba
+## Members
+- Pralin Dhungana  
+- Umme Habiba  
+- Gaurab Gaihre  
+- Carlos Cordoba  
 
-#### What is this repository for? ###
+---
 
-* Setting up all files for the proposed project App Website, which is for Theme 3 Remote Housing Crisis
+## Overview of Project
 
-* AI is used for coding, with the code edited extensively by the students in this Project
+This Git Repository is used to document the process undertaken in designing a web application using Django to solve the third theme, which focuses on the remote housing crisis in the Northern Territory (NT).
 
-# Project Brief 
+---
 
-## Theme 3. Remote Housing Crisis centred in NT
+## Problem Context
 
-As part of our project, we are developing an app to help tackle the current housing crisis in the Northern Territory. Currently, about 6000 people are on the public housing waitlist, and many homes face long delays for repairs and recycling for new tenants. We aim to help reduce the stresses and issues seen by many tenants when requesting repairs and thereby speeding up the processes to bring public houses back into the market and help maintain these assets viable for future tenants in the NT. This can help reduce the waiting lists for public housing by having more homes available sooner through current upkeep and quicker repairs.
+There is a very significant housing problem being faced in the Northern Territory, which includes:
 
+- About 6,000 people on the waiting list for public housing  
+- Delays in carrying out repairs and housing property turnover  
+- Inefficiency in the maintenance of housing stock that leads to problems in terms of housing shortage.  
 
-# Purpose of the app
+The web application would help in overcoming some of the above problems through a structured method of maintaining repair requests and maintenance work.
 
-* Present our skills and technical knowledge
-* Provide a useful and efficient app for tenants to request repairs and maintenance.
-* help to keep the quality and availability of NT public housing assets via prompt maintenance
+---
 
-# Target Users (Persona)
+## Objective
 
-We aim as likely users of the app to be mainly both NT public housing clients and the various contractors and repairmen who will bid for work via the app. Other users will be staff at the NT Department of Housing, Local Government and Community. 
+The objective of the application is to:
 
-# Hypothesis
+- Enable the tenants to easily report and track their repairs  
+- Facilitate communication between the tenants, contractors and the Housing Authorities  
+- Maintain the houses by ensuring effective maintenance work  
+- Improve the availability of housing by minimizing housing downtime.  
 
-An accessable user friendly, visually appealing and efficient app will increase interactions and user engagement between tenants and tradesmen. Tradesmen will do the upkeep to ensure these assests the NT government owns remain viable and ready to use again with new tenants.
+---
 
-# Conclusion
+## Target Audience
 
-The web application is designed to provide a user-friendly and efficient platform for managing tenant–maintenance interactions. Additionally, the platform supports the ongoing upkeep of Northern Territory Government assets, ensuring they remain in suitable condition for future tenancy. By maintenance efficiency and asset readiness, particularly in remote areas, this initiative contributes to broader efforts to alleviate the housing crisis in the Northern Territory.
+Tenants, Maintenance staff/contractors, and Housing Authority Staff
 
+---
+
+## Features
+
+- Submitting and maintaining repairs  
+- Tracking repair request status (for example: pending, in process, completed)  
+- Reviewing the repair history of each house  
+- Categorizing the issue into (plumbing, electricity, structure, etc.)  
+- Monitoring community-wide maintenance work  
+
+---
+
+## Technology Stack
+
+- Web framework: Django  
+- Programming language: Python  
+- Database management system: SQLite (development environment)  
+- Version control system: GitHub  
+
+---
+
+## Development Strategy
+
+For our project we will be implementing architectural and design-driven software engineering approach, where:
+
+- Architectural decisions are made by documenting them in an Architectural Decision Record (ADR).  
+- Object-oriented design principles such as encapsulation and modularity are used.  
+- Django's philosophies such as DRY (Don't Repeat Yourself), fat models and thin views are adhered to.  
+- QuerySets and class-based views are structured to encourage reuse and maintain efficiency.  
+
+Artificial Intelligence assisted tools are utilized in scaffoldings, and all the generated codes are reviewed and adapted and understood by all group members.
+
+---
+
+## Contents of This Repository
+
+- Codebase for the Django project  
+- Architecture Decision Record (ADR)  
+- Group Contract and other project planning documentation  
+- Additional diagrams and documentation  
+
+---
+
+## Conclusion
+
+This application aims to provide a practical and scalable solution to improve housing maintenance processes in remote NT communities. By enhancing repair efficiency and transparency, the system contributes to better housing availability and supports broader efforts to address the housing crisis.
 
