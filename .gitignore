@@ -1,6 +1,10 @@
 # Virtual environments
 env_proj/
 proj_1/env_proj/
+.venv/
+
+# Database
+db.sqlite3
 
 # Python cache
 __pycache__/
