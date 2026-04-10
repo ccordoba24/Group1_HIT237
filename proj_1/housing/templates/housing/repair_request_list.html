@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Repair Requests</title>
+</head>
+<body>
+    <h1>Repair Requests</h1>
+
+    {% if requests %}
+        <ul>
+            {% for request in requests %}
+                <li>
+                    <strong>{{ request.title }}</strong> -
+                    {{ request.status }} -
+                    {{ request.dwelling.address }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No repair requests found.</p>
+    {% endif %}
+</body>
+</html>
