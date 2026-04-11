@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Repair Requests</title>
+    <title>New Repair Request</title>
 </head>
 <body>
-    <h1>Repair Requests</h1>
+    <h1>Create Repair Request</h1>
 
-    {% if requests %}
-        <ul>
-            {% for request in requests %}
-                <li>
-    <a href="{% url 'repair-request-detail' request.pk %}">
-        <strong>{{ request.title }}</strong>
-    </a>
-    - {{ request.status }} - {{ request.dwelling.address }}
-         </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No repair requests found.</p>
-    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    <p><a href="{% url 'repair-request-list' %}">Back to Repair Requests</a></p>
 </body>
+</html>
