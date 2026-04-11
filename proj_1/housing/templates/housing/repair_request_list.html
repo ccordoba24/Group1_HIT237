@@ -10,14 +10,14 @@
         <ul>
             {% for request in requests %}
                 <li>
-                    <strong>{{ request.title }}</strong> -
-                    {{ request.status }} -
-                    {{ request.dwelling.address }}
-                </li>
+    <a href="{% url 'repair-request-detail' request.pk %}">
+        <strong>{{ request.title }}</strong>
+    </a>
+    - {{ request.status }} - {{ request.dwelling.address }}
+         </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>No repair requests found.</p>
     {% endif %}
 </body>
-</html>
