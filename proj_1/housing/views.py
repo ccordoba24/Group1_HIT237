@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import RepairRequest
 from .forms import RepairRequestForm
@@ -17,6 +17,13 @@ class RepairRequestDetailView(DetailView):
 
 
 class RepairRequestCreateView(CreateView):
+    model = RepairRequest
+    form_class = RepairRequestForm
+    template_name = "housing/repair_request_form.html"
+    success_url = reverse_lazy("repair-request-list")
+
+
+class RepairRequestUpdateView(UpdateView):
     model = RepairRequest
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"

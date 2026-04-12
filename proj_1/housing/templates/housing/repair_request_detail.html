@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Repair Request Detail</title>
+</head>
+<body>
+    <h1>{{ request.title }}</h1>
+
+    <p><strong>Status:</strong> {{ request.status }}</p>
+    <p><strong>Category:</strong> {{ request.category.name }}</p>
+    <p><strong>Dwelling:</strong> {{ request.dwelling.address }}</p>
+    <p><strong>Tenant:</strong> {{ request.tenant.user.username }}</p>
+    <p><strong>Description:</strong> {{ request.description }}</p>
+    <p><strong>Created:</strong> {{ request.created_at }}</p>
+
+    <p><a href="{% url 'repair-request-update' request.pk %}">Edit this request</a></p>
+    <p><a href="{% url 'repair-request-list' %}">Back to Repair Requests</a></p>
+</body>
+</html>
