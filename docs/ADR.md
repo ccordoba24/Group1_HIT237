@@ -1,10 +1,12 @@
-# ADR 1: Use Django ORM for database interaction
+# ADR 1 Title: Use Django ORM for database interaction
 
 ## Status
 Accepted
 
+## 16 April 2026, first submission
+
 ## Context
-We needed a way to manage and interact with the database efficiently.
+We needed a way to manage and interact with the database efficiently. Using views.py may become bloated with complex business logic, so more apps are used to reduce this. 
 
 ## Alternatives
 - Raw SQL (more control but complex)
