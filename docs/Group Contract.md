@@ -47,11 +47,13 @@ It is everyone's duty to review progress and provide necessary assistance to fel
 
 iv. Conflict Resolution
 
-All conflicts between team members will be sorted out through discussion followed by discussion during team meetings and further escalation to Dr. Yakub.
+All conflicts between team members will be sorted out through discussion on MS Teams, followed by discussion during team meetings and if no solution found then further escalation to Shantanu Barua or Dr. Yakub as last resort.
 
 v.Decision-Making
 
-Team decisions will be made based on discussions among members and will be based on consensus.
+Team decisions will be made based on discussions among members and will be based on consensus. Documentation of desicions will be recorded in the minutes of our MS Teams meetings, and later on the ADR where it is related to the project and recorded on Github ADR file. 
+
+vi. We accept that there can be individual disagreement with a decision reached, but once a consensus is reach by a majority of the team, all will commit to support the implementation of the decision regardless of prior indevidual stances. This is our Disagree and Commit clause. 
 
 
 # Section 2: Academic Integrity and Use of AI 
@@ -181,7 +183,7 @@ Decisions will be revised as necessary, and the old decision will be archived wi
 iii. References in Code
 
 Each ADR will include references to:
-- pertinent GitHub commit messages
+- pertinent GitHub commit messages were possible
 - issues
 - code elements implemented
 
@@ -197,6 +199,7 @@ A technical review at each milestone should address the following items:
  v. Evaluation of Alternatives
  
 Before making major decisions, the group will:
+- meet on MS Teams, for Group 1 team
 - examine one alternative solution
 - compare and contrast benefits and drawbacks
 - document decision-making rationale in ADR
@@ -212,5 +215,5 @@ Before making major decisions, the group will:
 * Weekly Meeting: Every Tuesday at 5:00 PM on Microsoft Teams.
 * Internal Review: The team will review all work at least one week before each deadline to ensure proper integration and completion.
 * GitHub Uploads: Individual work must be posted 5 days before any deadline.
-* Conflict Rule: If a member is silent for over 72 hours, we document it on Teams and notify the lecturer.
+* Conflict Rule: If a member is silent for over several days, we document it on Teams and notify Shantanu Barua on MS Teams.
 
