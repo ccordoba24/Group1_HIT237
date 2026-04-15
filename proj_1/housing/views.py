@@ -6,6 +6,18 @@ from .forms import RepairRequestForm
 # --- Habiba: Home View ---
 class HomeView(TemplateView):
     template_name = "housing/home.html"
+
+
+class RegisterView(TemplateView):
+    template_name = "housing/register.html"
+
+
+class FAQView(TemplateView):
+    template_name = "housing/faq.html"
+
+
+class AboutView(TemplateView):
+    template_name = "housing/about.html"
 class RepairRequestListView(ListView):
     model = RepairRequest
     template_name = "housing/repair_request_list.html"

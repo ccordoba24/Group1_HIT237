@@ -1,120 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Housing Maintenance - Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 0;
-        }
+{% extends "housing/base.html" %}
 
-        .header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 18px 30px;
-            font-size: 20px;
-            font-weight: 500;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 60px auto;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .container h2 {
-            font-size: 26px;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .container p {
-            font-size: 15px;
-            color: #666;
-            margin-bottom: 40px;
-        }
-
-        .card-grid {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-        }
-
-        .card {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 30px 24px;
-            width: 260px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            text-decoration: none;
-            color: inherit;
-            border-top: 4px solid #3498db;
-            transition: transform 0.1s;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-        }
-
-        .card.green {
-            border-top-color: #639922;
-        }
-
-        .card-icon {
-            font-size: 36px;
-            margin-bottom: 14px;
-        }
-
-        .card h3 {
-            font-size: 17px;
-            color: #2c3e50;
-            margin: 0 0 8px 0;
-        }
-
-        .card p {
-            font-size: 13px;
-            color: #888;
-            margin: 0 0 20px 0;
-        }
-
-        .card-btn {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #ffffff;
-            background-color: #3498db;
-            text-decoration: none;
-        }
-
-        .card.green .card-btn {
-            background-color: #639922;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        NT Housing Maintenance System
-    </div>
-
+{% block content %}
     <div class="container">
         <h2>Welcome</h2>
         <p>Use the options below to submit a repair request or view maintenance history.</p>
 
-        <div class="card-grid">
+        <div class="card-grid" style="display:flex;gap:24px;justify-content:center">
 
-            <div class="card">
+            <div class="card" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #3498db">
                 <div class="card-icon">🔧</div>
                 <h3>Repair Requests</h3>
                 <p>View, create, or update repair requests.</p>
                 <a href="{% url 'repair-request-list' %}" class="card-btn">Go to Requests</a>
             </div>
 
-            <div class="card green">
+            <div class="card green" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #639922">
                 <div class="card-icon">📋</div>
                 <h3>Maintenance History</h3>
                 <p>See all completed repairs and past fixes.</p>
@@ -123,6 +23,4 @@
 
         </div>
     </div>
-
-</body>
-</html>
+{% endblock %}

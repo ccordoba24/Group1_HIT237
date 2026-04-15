@@ -6,6 +6,7 @@ from .views import (
     RepairRequestUpdateView,
     MaintenanceHistoryView,
     HomeView
+    , RegisterView, FAQView, AboutView
 )
 
 urlpatterns = [
@@ -16,4 +17,7 @@ urlpatterns = [
     path("requests/<int:pk>/edit/", RepairRequestUpdateView.as_view(), name="repair-request-update"),
     # --- Habiba: Maintenance History URL ---
     path("history/", MaintenanceHistoryView.as_view(), name="maintenance-history"),
+    path("register/", RegisterView.as_view(), name="register"),
+    path("faq/", FAQView.as_view(), name="faq"),
+    path("about/", AboutView.as_view(), name="about"),
 ]
