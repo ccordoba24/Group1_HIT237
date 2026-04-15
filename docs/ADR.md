@@ -7,11 +7,17 @@ Accepted
 ## 16 April 2026, first submission
 
 ## Context
-We needed an efficient way to manage data and encapsulate business logic. By using Django ORM, we can implement Fat Modes, where complex logic like calculating repair urgency is stored within the model layer rather than the views. 
+We needed an efficient way to manage data and encapsulate business logic. By using Django ORM, we can implement Fat Models, where complex logic like calculating repair urgency is stored within the model layer rather than the views. 
 
 ## Alternatives
-- Raw SQL (more control but complex)
-- Django ORM (simpler and integrated with Django)
+- Raw SQL (more control but complex). Risk of SQL injection and high maintenance cost for schema migrations in 
+  a rapidly evolving housing database
+- Django ORM (simpler and integrated with Django). Provides built-in protection against common vulnerabilities 
+  and handles migratins automatically. 
+
+## Validation
+
+Automated unit tests will target model methods to ensure busienss logic, like urgency calculations, remains accurate regardless of the view layer.
 
 ## Decision
 We chose Django ORM because it simplifies database operations and integrates well with Django.
@@ -23,7 +29,7 @@ models.py
 Faster development but less control over low-level queries.
 - Encapsulation: Business logic is centralized in the models, making it accessible to both the web UI and  
   potential future API endpoints without duplications.
-- Data Integrity: Validation logic is tried directly to the database objects. 
+- Data Integrity: Validation logic is tied directly to the database objects. 
 
 
 # ADR 2: Use Class-Based Views for handling requests
@@ -37,6 +43,10 @@ We needed a structured way to handle application logic and user requests in Djan
 ## Alternatives
 - Function-based views (simpler but less reusable)
 - Class-based views (more structured and reusable)
+
+## Compliance
+
+Code reviews will enforce that no business logic or complex if chains are included in views.py, so as to keep them strictly for request handling
 
 ## Decision
 We chose class-based Views, specifically Django's generic views becuse it provides a standardised way to handle CRUD operations with minimal code.
