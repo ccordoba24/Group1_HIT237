@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maintenance History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 16px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #3498db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            background-color: #2980b9;
+        }
+
+        .summary-bar {
+            background-color: #eaf3de;
+            border-left: 4px solid #639922;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #3b6d11;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead tr {
+            background-color: #2c3e50;
+            color: #ffffff;
+        }
+
+        thead th {
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f7ff;
+        }
+
+        tbody td {
+            padding: 11px 14px;
+            color: #444;
+        }
+
+        .badge-completed {
+            background-color: #eaf3de;
+            color: #3b6d11;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .title-link {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .title-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="page-header">
+            <h1>Maintenance History</h1>
+            <a href="{% url 'repair-request-list' %}" class="back-link">Back to Requests</a>
+        </div>
+
+        {% if completed_requests %}
+
+            <div class="summary-bar">
+                Total completed repairs: <strong>{{ completed_requests|length }}</strong>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Dwelling</th>
+                        <th>Tenant</th>
+                        <th>Completed On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for repair in completed_requests %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'repair-request-detail' repair.pk %}" class="title-link">
+                                {{ repair.title }}
+                            </a>
+                        </td>
+                        <td>{{ repair.category.name }}</td>
+                        <td>{{ repair.dwelling.address }}</td>
+                        <td>{{ repair.tenant.user.username }}</td>
+                        <td>{{ repair.updated_at|date:"d M Y" }}</td>
+                        <td><span class="badge-completed">Completed</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+            <div class="empty-state">
+                <p>No completed repairs found.</p>
+            </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
