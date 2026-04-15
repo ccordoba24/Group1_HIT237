@@ -1,4 +1,5 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .models import RepairRequest
 from .forms import RepairRequestForm
@@ -28,15 +29,17 @@ class RepairRequestDetailView(DetailView):
         )
 
 
-class RepairRequestCreateView(CreateView):
+class RepairRequestCreateView(LoginRequiredMixin, CreateView):
     model = RepairRequest
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
+    login_url = "/admin/login/"
 
 
-class RepairRequestUpdateView(UpdateView):
+class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
     model = RepairRequest
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
+    login_url = "/admin/login/"
