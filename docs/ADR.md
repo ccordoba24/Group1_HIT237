@@ -152,3 +152,32 @@ We applied and documented the following core philosophies:
 **Cons:** Model-heavy logic means tests require more model setup, but this is a worthwhile trade-off.
 
 ---
+
+### ADR 7 : Django Design Patterns Used
+
+**Status:** Accepted
+
+**Context**  
+We needed to clearly explain which design patterns were used and why they were appropriate for this project.
+
+**Alternatives considered**  
+- Service layer or Repository pattern: More explicit separation but added abstraction not encouraged by Django’s philosophy.
+
+**Decision**  
+We used four idiomatic Django patterns:  
+- Generic class-based views for CRUD operations  
+- ModelForm pattern for DRY form handling  
+- QuerySet optimisation with `select_related()`  
+- Related-name reverse relations for clean model navigation
+
+**Code reference**  
+- Generic CBVs: `proj_1/housing/views.py:7–45`  
+- ModelForm: `proj_1/housing/forms.py:5–12`  
+- QuerySet optimisation: `proj_1/housing/views.py:12–17`  
+- Reverse relations: `proj_1/housing/models.py:66–71`
+
+**Consequences**  
+**Pros:** Patterns are familiar to Django developers and easy to explain in the viva.  
+**Cons:** Some abstraction (especially in CBVs) requires understanding of Django’s internal lifecycle.
+
+---
