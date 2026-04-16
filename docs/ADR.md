@@ -72,3 +72,32 @@ We adopted Django’s **generic class-based views** (`ListView`, `DetailView`, `
 **Cons:** CBVs can obscure control flow — understanding lifecycle methods (`get_queryset`, `form_valid`, etc.) is important (documented in comments).
 
 ---
+
+### ADR 4 : Server-Side Rendering with Django Templates
+
+**Status:** Accepted
+
+**Context**  
+We needed a simple, reliable UI that could be quickly built and easily demonstrated during the viva without a complex frontend setup.
+
+**Alternatives considered**  
+- **JSON API + Single Page Application**: Better user experience but required serializers, CORS, and a separate frontend framework.  
+- **Hybrid SSR + JS enhancement**: Added complexity with little benefit for this project’s scope.
+
+**Decision**  
+We used **Django templates** for all primary views. The UI is fully server-rendered with no additional build tools required.
+
+**Code reference**  
+- `proj_1/housing/templates/housing/repair_request_list.html:1–35`  
+- `proj_1/housing/views.py:7–45` (views referencing templates)
+- Additional static pages served as TemplateViews with no model 
+  logic: `HomeView`, `RegisterView`, `FAQView`, `AboutView` 
+  — confirming the template-first approach throughout the project  
+  (`proj_1/housing/views.py` — HomeView, RegisterView, FAQView, AboutView)
+
+
+**Consequences**  
+**Pros:** Fast development, zero frontend dependencies, straightforward to demo live.  
+**Cons:** Less dynamic than a modern SPA, but a reasonable trade-off for a backend-focused assignment.
+
+---
