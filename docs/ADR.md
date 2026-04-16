@@ -279,3 +279,25 @@ We used Django’s **default `auth.User`** model with a `OneToOneField` to the T
 **Cons:** Future migration to custom user model would require careful handling.
 
 ---
+
+### ADR 12 : Permission Handling with LoginRequiredMixin and Planned RBAC
+
+**Status:** Accepted (Partially Implemented)
+
+**Context**  
+Different user roles (tenants vs staff) require different levels of access to repair requests.
+
+**What’s implemented**  
+`LoginRequiredMixin` is applied to create and update views to protect them from unauthenticated users.
+
+**Planned**  
+Full role-based access control using custom mixins (`TenantRequiredMixin`, `StaffRequiredMixin`) and object-level ownership checks.
+
+**Code reference**  
+- `proj_1/housing/views.py` — `RepairRequestCreateView` and `RepairRequestUpdateView` inherit `LoginRequiredMixin`
+
+**Consequences**  
+**Pros:** Basic protection is in place with minimal code.  
+**Cons:** Currently only login protection; full RBAC and ownership checks are still to be implemented for finer control.
+
+---
