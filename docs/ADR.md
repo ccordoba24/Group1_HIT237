@@ -101,3 +101,31 @@ We used **Django templates** for all primary views. The UI is fully server-rende
 **Cons:** Less dynamic than a modern SPA, but a reasonable trade-off for a backend-focused assignment.
 
 ---
+
+
+### ADR 5 : Resource-Centred URL Structure
+
+**Status:** Accepted
+
+**Context**  
+URLs needed to be readable, predictable, and intuitive for both users and future developers.
+
+**Alternatives considered**  
+- **Deeply nested URLs** (`/communities/<id>/dwellings/<id>/requests/`): More RESTful but added unnecessary routing complexity.  
+- **Flat arbitrary URLs**: Simple but inconsistent and harder to maintain long-term.
+
+**Decision**  
+We implemented a **clean, resource-centred URL structure** under the `/requests/` namespace for all repair request operations.
+
+**Code reference**  
+- `proj_1/housing/urls.py` — full urlpatterns including:
+  - `/` — HomeView  
+  - `/requests/` — list, create, detail, edit  
+  - `/history/` — completed requests (MaintenanceHistoryView)  
+  - `/register/`, `/faq/`, `/about/` — static info pages
+
+**Consequences**  
+**Pros:** Easy to understand, maps directly to views, and is REST-friendly.  
+**Cons:** May need restructuring later if community- or dwelling-level filtering is required.
+
+---
