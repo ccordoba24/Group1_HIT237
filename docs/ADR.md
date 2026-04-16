@@ -301,3 +301,39 @@ Full role-based access control using custom mixins (`TenantRequiredMixin`, `Staf
 **Cons:** Currently only login protection; full RBAC and ownership checks are still to be implemented for finer control.
 
 ---
+
+
+---
+
+### ADR 13 : Seed Data via Custom Django Management Command
+
+**Status:** Accepted
+
+**Context**  
+The application needs realistic demo data for development, testing, and the viva demonstration. Manually entering data through the admin panel after every database reset is time-consuming and error-prone.
+
+**Alternatives considered**  
+- **Manual admin entry**: No extra code but slow and not repeatable.  
+- **Django fixtures (JSON/YAML)**: Built-in but brittle when models change and lacks logic.  
+- **Custom management command**: Version-controlled, idempotent, and extensible.
+
+**Decision**  
+We created a custom management command `seed_data` that uses `get_or_create` to safely populate the database. It can be run multiple times without creating duplicates.
+
+**Code reference**  
+- `proj_1/housing/management/commands/seed_data.py` — Complete command
+
+**Consequences**  
+**Pros:** Repeatable, safe, excellent for demos, clearly documents sample data.  
+**Cons:** Must be manually kept in sync with model changes.
+
+---
+
+**Superseded Decisions**
+
+**Superseded: Function-based views → Class-based views**  
+**Status:** Superseded by ADR 3  
+
+We initially prototyped with function-based views for quick iteration. As the project grew, we migrated to class-based generic views to reduce duplication and better follow Django conventions (see ADR 3).
+
+---
