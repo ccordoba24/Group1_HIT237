@@ -354,14 +354,14 @@ We initially prototyped with function-based views for quick iteration. As the pr
 
 ## ADR 14 — Maintenance history as a separate filtered view
 
-Status: Accepted
+**Status: Accepted**
 
-### Context
+**Context** 
 Users need a way to view completed repair requests separately 
 from the active request list. Mixing completed and open requests 
 in one view makes it harder to track ongoing issues vs resolved ones.
 
-### Alternatives considered
+**Alternatives considered** 
 1. Add a filter parameter to the existing RepairRequestListView 
    (e.g., ?status=completed)
    - Pros: reuses existing view, fewer URL routes
@@ -377,18 +377,18 @@ in one view makes it harder to track ongoing issues vs resolved ones.
    - Pros: no extra code
    - Cons: regular users/tenants can't access the admin panel
 
-### Decision
+**Decision**
 We created a separate `MaintenanceHistoryView` that filters 
 `RepairRequest` objects by `status="completed"` and orders 
 by `-updated_at` so the most recently resolved requests appear 
 first. This keeps the view focused and the URL meaningful.
 
-### Code reference
+**Code reference**
 - `proj_1/housing/views.py` — `MaintenanceHistoryView` 
   (filters: `.filter(status="completed").order_by("-updated_at")`)
 - `proj_1/housing/urls.py` — `path("history/", ...)`
 
-### Consequences
+**Consequences**
 - Pros: clear separation between active and resolved requests, 
   clean dedicated URL, easy to extend (e.g. add date range filters)
 - Cons: if filtering logic changes (e.g. adding an "archived" 
@@ -397,3 +397,29 @@ first. This keeps the view focused and the URL meaningful.
 
 This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. The commit history shows these decisions were revisited and refined throughout development.
 
+## ADR 15 — AI-Assisted Development with Claude 2.5 Haiku and ChatGPT
+
+**Status: Accepted**
+
+**Context** 
+To accelerate the development of the Django application, AI tools are used throughout the project
+
+**Context**  
+To accelerate the development lifecycle of the Django application, we required tools that could assist with boilerplate generation, complex ORM query construction, and debugging within the **MS Visual Studio Code** environment.
+
+**Alternatives considered**  
+- **Manual Coding Only**: Ensured 100% human-authored logic but significantly slows down the implementation of repetitive patterns
+
+**Decision**  
+We integrated **Claude 3.5 Haiku** and **ChatGPT** into our workflow via VS Code extensions and web interfaces. 
+- **Claude 3.5 Haiku** was primarily used for rapid code generation and refactoring due to its high speed and concise output.
+- **ChatGPT** was utilized for high-level architectural brainstorming and explaining complex Django error traces.
+- **GitHub Copilot**: Integrated with VS Code was used for basic setup. 
+
+**Code reference**  
+- `proj_1/housing/views.py` — Logic for complex `get_queryset` overrides was refined using AI suggestions.
+- `proj_1/housing/management/commands/seed_data.py` — Initial boilerplate for the management command was generated via AI.
+
+**Consequences**  
+**Pros:** Significant reduction in development time, improved code documentation through AI-generated comments, and faster resolution of syntax errors.  
+**Cons:** Requires rigorous manual review to ensure the AI-generated code adheres to DRY principles and project-specific security requirements; potential for "hallucinations" in less common Django library versions.
