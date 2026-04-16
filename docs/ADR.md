@@ -1,3 +1,17 @@
+
+# Architecture Decision Records (ADRs)
+
+**Project:** Housing Repair Request Management System  
+**Repository:** https://github.com/ccordoba24/Group1_HIT237/  
+**Last Updated:** April 2026
+
+This living document records the key architectural and design decisions made throughout the development of the Django-based housing repair request application. Each entry explains the **context**, **alternatives considered**, the **chosen decision with rationale**, exact **code references**, and **consequences**.
+
+The commit history of this file demonstrates how decisions evolved as the project progressed.
+
+---
+
+
 ### ADR 1 : Normalised Database Models for Housing and Requests
 
 **Status:** Accepted
