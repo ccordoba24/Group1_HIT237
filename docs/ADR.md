@@ -208,3 +208,28 @@ We used `ForeignKey` and `OneToOneField` with `related_name` arguments throughou
 
 ---
 
+### ADR 9 : QuerySet API Usage and Optimisation
+
+**Status:** Accepted
+
+**Context**  
+List and detail views display data from multiple related models. Without optimisation this would lead to the N+1 query problem.
+
+**Alternatives considered**  
+- Default lazy loading: Simple but causes performance issues.  
+- Raw SQL: Full control but loses readability and portability.  
+- `prefetch_related()` for everything: Overkill for single-valued foreign keys.
+
+**Decision**  
+We used the QuerySet API idiomatically with `select_related()` for ForeignKey/OneToOne fields, `order_by()`, and encapsulated filtering logic in model methods.
+
+**Code reference**  
+- `proj_1/housing/views.py:12–17` — `select_related("category", "dwelling", "tenant__user").order_by("-created_at")`  
+- `proj_1/housing/views.py:25–28` — Detail view  
+- `proj_1/housing/models.py:21–22` — Model method using `exclude()`
+
+**Consequences**  
+**Pros:** Eliminates N+1 queries, improves performance, keeps code readable and reusable.  
+**Cons:** Requires understanding when to use `select_related()` vs `prefetch_related()`.
+
+---
