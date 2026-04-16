@@ -337,3 +337,49 @@ We created a custom management command `seed_data` that uses `get_or_create` to 
 We initially prototyped with function-based views for quick iteration. As the project grew, we migrated to class-based generic views to reduce duplication and better follow Django conventions (see ADR 3).
 
 ---
+
+## ADR 14 — Maintenance history as a separate filtered view
+
+Status: Accepted
+
+### Context
+Users need a way to view completed repair requests separately 
+from the active request list. Mixing completed and open requests 
+in one view makes it harder to track ongoing issues vs resolved ones.
+
+### Alternatives considered
+1. Add a filter parameter to the existing RepairRequestListView 
+   (e.g., ?status=completed)
+   - Pros: reuses existing view, fewer URL routes
+   - Cons: adds conditional logic to the view, complicates the 
+     template, harder to give the page its own layout and heading
+
+2. Dedicated MaintenanceHistoryView as a separate ListView
+   - Pros: single responsibility, clean URL (/history/), 
+     template can be tailored specifically for completed requests
+   - Cons: slight code duplication (another ListView class)
+
+3. Handle in the admin panel only
+   - Pros: no extra code
+   - Cons: regular users/tenants can't access the admin panel
+
+### Decision
+We created a separate `MaintenanceHistoryView` that filters 
+`RepairRequest` objects by `status="completed"` and orders 
+by `-updated_at` so the most recently resolved requests appear 
+first. This keeps the view focused and the URL meaningful.
+
+### Code reference
+- `proj_1/housing/views.py` — `MaintenanceHistoryView` 
+  (filters: `.filter(status="completed").order_by("-updated_at")`)
+- `proj_1/housing/urls.py` — `path("history/", ...)`
+
+### Consequences
+- Pros: clear separation between active and resolved requests, 
+  clean dedicated URL, easy to extend (e.g. add date range filters)
+- Cons: if filtering logic changes (e.g. adding an "archived" 
+  status), both this view and RepairRequestListView may need 
+  updating separately
+
+This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. The commit history shows these decisions were revisited and refined throughout development.
+
