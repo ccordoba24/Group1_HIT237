@@ -233,3 +233,26 @@ We used the QuerySet API idiomatically with `select_related()` for ForeignKey/On
 **Cons:** Requires understanding when to use `select_related()` vs `prefetch_related()`.
 
 ---
+
+### ADR 10 : Class-Based Views for All CRUD Operations
+
+**Status:** Accepted
+
+**Context**  
+We wanted consistent create, list, detail, and update flows without repeating boilerplate code.
+
+**Alternatives considered**  
+- Pure function-based views: Very explicit but verbose and repetitive.  
+- API-first approach: Out of scope for this project.
+
+**Decision**  
+We used Django’s generic class-based views (`ListView`, `DetailView`, `CreateView`, `UpdateView`) and customised them only where necessary by overriding specific methods.
+
+**Code reference**  
+- `proj_1/housing/views.py:7–45` — All four CBV classes
+
+**Consequences**  
+**Pros:** Consistent structure, minimal repetition, easy to extend.  
+**Cons:** Higher initial learning curve for those new to CBVs.
+
+---
