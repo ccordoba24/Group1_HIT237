@@ -181,3 +181,30 @@ We used four idiomatic Django patterns:
 **Cons:** Some abstraction (especially in CBVs) requires understanding of Django’s internal lifecycle.
 
 ---
+
+### ADR 8 : Explicit Relationship Modelling
+
+**Status:** Accepted
+
+**Context**  
+The domain contains natural relationships between tenants, dwellings, communities, and repair requests that must be properly modelled for querying and data integrity.
+
+**Alternatives considered**  
+- Storing raw integer foreign keys with manual joins: Error-prone and loses ORM benefits.  
+- Using JSON fields for nested data: Flexible but poor for querying and migrations.
+
+**Decision**  
+We used `ForeignKey` and `OneToOneField` with `related_name` arguments throughout the models to create clear, enforceable relationships.
+
+**Code reference**  
+- `proj_1/housing/models.py:13–16` — Dwelling → Community  
+- `proj_1/housing/models.py:25–27` — Tenant → User  
+- `proj_1/housing/models.py:47–51` — RepairRequest relationships  
+- `proj_1/housing/models.py:66–71` — MaintenanceUpdate reverse relation
+
+**Consequences**  
+**Pros:** Expressive queries, database-enforced integrity, easy reverse lookups.  
+**Cons:** Schema changes require migrations; `on_delete` behaviour needs careful consideration.
+
+---
+
