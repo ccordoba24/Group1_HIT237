@@ -46,3 +46,29 @@ We used Django’s **`ModelForm`** so form fields and validation are automatical
 **Cons:** Reduced flexibility for highly custom input flows (handled via `clean_` methods where needed).
 
 ---
+
+
+### ADR 3 : Class-Based Views with QuerySet Optimisation
+
+**Status:** Accepted
+
+**Context**  
+List and detail views needed to load related data (category, dwelling, tenant, user) efficiently without causing N+1 query problems.
+
+**Alternatives considered**  
+- **Function-based views with manual querysets**: Clear but repetitive and easy to forget eager loading.  
+- **Django REST Framework + SPA**: Modern but far beyond the scope of this assignment.
+
+**Decision**  
+We adopted Django’s **generic class-based views** (`ListView`, `DetailView`, `CreateView`, `UpdateView`) and overrode `get_queryset()` to include `select_related()` for eager loading.
+
+**Code reference**  
+- `proj_1/housing/views.py:12–17` — List view with `select_related()` and `order_by()`  
+- `proj_1/housing/views.py:25–28` — Detail view queryset  
+- `proj_1/housing/views.py:7–45` — All CBV definitions
+
+**Consequences**  
+**Pros:** Much less code, consistent patterns across CRUD operations, good performance by default.  
+**Cons:** CBVs can obscure control flow — understanding lifecycle methods (`get_queryset`, `form_valid`, etc.) is important (documented in comments).
+
+---
