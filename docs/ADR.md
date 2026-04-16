@@ -256,3 +256,26 @@ We used Django’s generic class-based views (`ListView`, `DetailView`, `CreateV
 **Cons:** Higher initial learning curve for those new to CBVs.
 
 ---
+
+### ADR 11 : Authentication: Default User Model with Profile
+
+**Status:** Accepted
+
+**Context**  
+We needed user authentication together with a Tenant profile. Choosing the right approach early was important because changing it later is disruptive.
+
+**Alternatives considered**  
+- Custom user model via `AbstractUser`: Recommended by Django but more upfront work.  
+- Third-party packages like django-allauth: Powerful but added complexity not needed here.
+
+**Decision**  
+We used Django’s **default `auth.User`** model with a `OneToOneField` to the Tenant model. We documented the path to switch to a custom user model later if requirements change.
+
+**Code reference**  
+- `proj_1/housing/models.py:23–31` — Tenant model linking to User
+
+**Consequences**  
+**Pros:** Quick to implement, well understood, low maintenance for current scope.  
+**Cons:** Future migration to custom user model would require careful handling.
+
+---
