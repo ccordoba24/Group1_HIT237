@@ -129,3 +129,26 @@ We implemented a **clean, resource-centred URL structure** under the `/requests/
 **Cons:** May need restructuring later if community- or dwelling-level filtering is required.
 
 ---
+
+### ADR 6 : Application of Core Django Design Philosophies
+
+**Status:** Accepted
+
+**Context**  
+The assessment required deliberate application and clear documentation of at least three Django design philosophies.
+
+**Decision**  
+We applied and documented the following core philosophies:  
+- **DRY (Don’t Repeat Yourself)** — Validation logic lives in `ModelForm` and model methods.  
+- **Fat Models, Thin Views** — Business logic (e.g. `is_open()`, `open_requests_count`) resides in the models.  
+- **Convention over Configuration** — Standard Django app and template structure is used so the framework auto-discovers files.
+
+**Code reference**  
+- DRY & Fat Models: `proj_1/housing/models.py:21–22`, `proj_1/housing/models.py:59–63`, `proj_1/housing/forms.py:5–12`  
+- Convention over Configuration: `proj_1/proj_1/settings.py:21–29`, `proj_1/housing/templates/housing/repair_request_list.html:1–35`
+
+**Consequences**  
+**Pros:** Cleaner, more maintainable code that clearly meets assessment requirements.  
+**Cons:** Model-heavy logic means tests require more model setup, but this is a worthwhile trade-off.
+
+---
