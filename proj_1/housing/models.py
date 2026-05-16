@@ -47,9 +47,24 @@ class RepairRequest(models.Model):
     dwelling = models.ForeignKey(Dwelling, on_delete=models.CASCADE)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="repair_requests",
+        null=True,
+        blank=True
+    )
+
     title = models.CharField(max_length=200)
     description = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -69,6 +84,7 @@ class MaintenanceUpdate(models.Model):
         on_delete=models.CASCADE,
         related_name="updates"
     )
+
     note = models.TextField()
     updated_at = models.DateTimeField(auto_now_add=True)
 
