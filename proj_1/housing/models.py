@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.contrib.auth.models import User
 
 
@@ -37,12 +38,37 @@ class Category(models.Model):
         return self.name
 
 
+class RepairRequestQuerySet(models.QuerySet):
+    def open(self):
+        return self.exclude(status="completed")
+
+    def completed(self):
+        return self.filter(status="completed")
+
+    def pending(self):
+        return self.filter(status="pending")
+
+    def in_progress(self):
+        return self.filter(status="in_progress")
+
+    def for_tenant(self, tenant):
+        return self.filter(tenant=tenant)
+
+    def for_user(self, user):
+        return self.filter(created_by=user)
+
+    def with_update_count(self):
+        return self.annotate(update_count=Count("updates"))
+
+
 class RepairRequest(models.Model):
     STATUS_CHOICES = [
         ("pending", "Pending"),
         ("in_progress", "In Progress"),
         ("completed", "Completed"),
     ]
+
+    objects = RepairRequestQuerySet.as_manager()
 
     dwelling = models.ForeignKey(Dwelling, on_delete=models.CASCADE)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
@@ -53,7 +79,7 @@ class RepairRequest(models.Model):
         on_delete=models.CASCADE,
         related_name="repair_requests",
         null=True,
-        blank=True
+        blank=True,
     )
 
     title = models.CharField(max_length=200)
@@ -62,7 +88,7 @@ class RepairRequest(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default="pending"
+        default="pending",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -77,12 +103,15 @@ class RepairRequest(models.Model):
     def is_completed(self):
         return self.status == "completed"
 
+    def update_count(self):
+        return self.updates.count()
+
 
 class MaintenanceUpdate(models.Model):
     repair_request = models.ForeignKey(
         RepairRequest,
         on_delete=models.CASCADE,
-        related_name="updates"
+        related_name="updates",
     )
 
     note = models.TextField()
