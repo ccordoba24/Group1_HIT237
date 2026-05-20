@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from django.views.generic import (
     ListView,
     DetailView,
@@ -11,7 +12,7 @@ from django.urls import reverse_lazy
 
 from .models import RepairRequest, MaintenanceUpdate
 from .forms import RepairRequestForm, MaintenanceUpdateForm
-from .services import RepairRequestService
+from .services import RepairRequestService, PermissionService
 
 
 # --- Home / Static Pages ---
@@ -99,6 +100,9 @@ class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "/admin/login/"
 
     def get_queryset(self):
+        if PermissionService.is_staff_or_superuser(self.request.user):
+            return RepairRequest.objects.all()
+
         return RepairRequest.objects.filter(
             created_by=self.request.user
         )
@@ -134,6 +138,14 @@ class MaintenanceUpdateCreateView(LoginRequiredMixin, CreateView):
     form_class = MaintenanceUpdateForm
     template_name = "housing/maintenance_update_form.html"
     login_url = "/admin/login/"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not PermissionService.can_add_maintenance_update(request.user):
+            return HttpResponseForbidden(
+                "Only staff or admin users can add maintenance updates."
+            )
+
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         repair_request = RepairRequest.objects.get(pk=self.kwargs["pk"])
