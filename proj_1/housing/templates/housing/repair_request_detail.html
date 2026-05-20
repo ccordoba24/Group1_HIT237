@@ -4,6 +4,7 @@
     <title>Repair Request Detail</title>
 </head>
 <body>
+
     <h1>{{ request.title }}</h1>
 
     <p><strong>Status:</strong> {{ request.status }}</p>
@@ -13,7 +14,43 @@
     <p><strong>Description:</strong> {{ request.description }}</p>
     <p><strong>Created:</strong> {{ request.created_at }}</p>
 
-    <p><a href="{% url 'repair-request-update' request.pk %}">Edit this request</a></p>
-    <p><a href="{% url 'repair-request-list' %}">Back to Repair Requests</a></p>
+    <hr>
+
+    <h2>Maintenance Updates</h2>
+
+    <p>
+        <a href="{% url 'maintenance-update-create' request.pk %}">
+            Add Maintenance Update
+        </a>
+    </p>
+
+    {% if request.updates.all %}
+        <ul>
+            {% for update in request.updates.all %}
+                <li>
+                    {{ update.note }}
+                    <br>
+                    <small>{{ update.updated_at }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No maintenance updates recorded.</p>
+    {% endif %}
+
+    <hr>
+
+    <p>
+        <a href="{% url 'repair-request-update' request.pk %}">
+            Edit this request
+        </a>
+    </p>
+
+    <p>
+        <a href="{% url 'repair-request-list' %}">
+            Back to Repair Requests
+        </a>
+    </p>
+
 </body>
 </html>

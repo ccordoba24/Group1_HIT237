@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Maintenance Update</title>
+</head>
+<body>
+    <h1>Add Maintenance Update</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Save Update</button>
+    </form>
+
+    <p>
+        <a href="{% url 'repair-request-detail' view.kwargs.pk %}">
+            Back to Repair Request
+        </a>
+    </p>
+</body>
+</html>

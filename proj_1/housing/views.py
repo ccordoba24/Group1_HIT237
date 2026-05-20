@@ -9,8 +9,8 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
-from .models import RepairRequest
-from .forms import RepairRequestForm
+from .models import RepairRequest, MaintenanceUpdate
+from .forms import RepairRequestForm, MaintenanceUpdateForm
 from .services import RepairRequestService
 
 
@@ -124,4 +124,24 @@ class MaintenanceHistoryView(ListView):
             .completed()
             .with_update_count()
             .order_by("-updated_at")
+        )
+
+
+# --- Add Maintenance Update ---
+
+class MaintenanceUpdateCreateView(LoginRequiredMixin, CreateView):
+    model = MaintenanceUpdate
+    form_class = MaintenanceUpdateForm
+    template_name = "housing/maintenance_update_form.html"
+    login_url = "/admin/login/"
+
+    def form_valid(self, form):
+        repair_request = RepairRequest.objects.get(pk=self.kwargs["pk"])
+        form.instance.repair_request = repair_request
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "repair-request-detail",
+            kwargs={"pk": self.kwargs["pk"]}
         )
