@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 
 from .models import RepairRequest
 from .forms import RepairRequestForm
+from .services import RepairRequestService
 
 
 # --- Home / Static Pages ---
@@ -81,7 +82,10 @@ class RepairRequestCreateView(LoginRequiredMixin, CreateView):
     login_url = "/admin/login/"
 
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
+        self.object = RepairRequestService.create_repair_request(
+            form=form,
+            user=self.request.user
+        )
         return super().form_valid(form)
 
 
@@ -93,6 +97,18 @@ class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
     login_url = "/admin/login/"
+
+    def get_queryset(self):
+        return RepairRequest.objects.filter(
+            created_by=self.request.user
+        )
+
+    def form_valid(self, form):
+        self.object = RepairRequestService.update_repair_request(
+            form=form,
+            user=self.request.user
+        )
+        return super().form_valid(form)
 
 
 # --- Maintenance History ---
