@@ -6,17 +6,30 @@
 <body>
     <h1>Repair Requests</h1>
 
-    <p><a href="{% url 'repair-request-create' %}">Create New Repair Request</a></p>
+    <p>
+        <a href="{% url 'repair-request-create' %}">
+            Create New Repair Request
+        </a>
+    </p>
 
     {% if requests %}
+        <h2>Request List</h2>
+
         <ul>
             {% for request in requests %}
                 <li>
                     <a href="{% url 'repair-request-detail' request.pk %}">
                         <strong>{{ request.title }}</strong>
                     </a>
-                    - {{ request.status }} - {{ request.dwelling.address }}
+
+                    <br>
+                    Status: {{ request.status }}
+                    <br>
+                    Dwelling: {{ request.dwelling.address }}
+                    <br>
+                    Maintenance updates: {{ request.update_count }}
                 </li>
+                <br>
             {% endfor %}
         </ul>
     {% else %}
