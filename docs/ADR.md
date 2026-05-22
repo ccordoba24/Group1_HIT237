@@ -423,3 +423,29 @@ We integrated **Claude 3.5 Haiku** and **ChatGPT** into our workflow via VS Code
 **Consequences**  
 **Pros:** Significant reduction in development time, improved code documentation through AI-generated comments, and faster resolution of syntax errors.  
 **Cons:** Requires rigorous manual review to ensure the AI-generated code adheres to DRY principles and project-specific security requirements; potential for "hallucinations" in less common Django library versions.
+
+
+
+---
+
+### ADR 16 : Transition to a Dedicated Service Layer for Business Logic
+
+**Status:** Accepted
+
+**Context**  
+While the "Fat Models, Thin Views" approach (ADR 6) worked for simple logic, the system's growth required more complex coordination between permissions, transactional data updates, and validation. Keeping this logic in models made them bloated, and putting it in views made them difficult to test.
+
+**Alternatives considered**  
+- **Expanding Model Methods**: Risked creating "God Models" that are hard to maintain.  
+- **Logic in ModelForms**: Limits the reuse of business logic to only when a form is present.
+
+**Decision**  
+We introduced a **Service Layer (`services.py`)** to encapsulate business operations and permission checks. Views now act as simple coordinators that delegate tasks to `RepairRequestService` or `PermissionService`.
+
+**Code reference**  
+- `proj_1/housing/services.py` — Implementation of service classes.
+- `proj_1/housing/views.py:86, 111` — Views delegating logic to the service layer.
+
+**Consequences**  
+- **Pros:** Clearer separation of concerns; business logic can be unit-tested without HTTP request mocks; centralized permission management.  
+- **Cons:** Introduces a new layer of abstraction and an additional file to manage in the app.
