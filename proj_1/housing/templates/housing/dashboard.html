@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Housing Dashboard</title>
+</head>
+<body>
+    <h1>Housing Maintenance Dashboard</h1>
+
+    <p><strong>Total Requests:</strong> {{ total_requests }}</p>
+    <p><strong>Open Requests:</strong> {{ open_requests }}</p>
+    <p><strong>Completed Requests:</strong> {{ completed_requests }}</p>
+
+    <h2>Requests by Status</h2>
+
+    {% if requests_by_status %}
+        <ul>
+            {% for item in requests_by_status %}
+                <li>{{ item.status }}: {{ item.total }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No request data available.</p>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'repair-request-list' %}">
+            Back to Repair Requests
+        </a>
+    </p>
+</body>
+</html>

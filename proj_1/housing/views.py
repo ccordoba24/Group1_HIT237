@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.views.generic import (
     ListView,
@@ -31,6 +32,29 @@ class FAQView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = "housing/about.html"
+
+
+# --- Dashboard ---
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "housing/dashboard.html"
+    login_url = "/admin/login/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["total_requests"] = RepairRequest.objects.count()
+        context["open_requests"] = RepairRequest.objects.open().count()
+        context["completed_requests"] = RepairRequest.objects.completed().count()
+
+        context["requests_by_status"] = (
+            RepairRequest.objects
+            .values("status")
+            .annotate(total=Count("id"))
+            .order_by("status")
+        )
+
+        return context
 
 
 # --- Repair Request List ---
