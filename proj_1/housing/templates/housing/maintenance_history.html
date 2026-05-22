@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Maintenance History</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
+{% extends "housing/base.html" %}
 
+{% block content %}
+    <style>
         .container {
             max-width: 900px;
-            margin: 0 auto;
+            margin: 30px auto 0 auto; /* Added top margin */
             background: #ffffff;
             border-radius: 10px;
             padding: 30px;
@@ -113,8 +104,6 @@
             color: #999;
         }
     </style>
-</head>
-<body>
     <div class="container">
 
         <div class="page-header">
@@ -164,5 +153,4 @@
         {% endif %}
 
     </div>
-</body>
-</html>
+{% endblock %}
