@@ -502,3 +502,30 @@ We implemented a dedicated exception hierarchy in `exceptions.py`. These "Domain
 - **Cons:** Requires defining new exception classes for different error types, adding a small amount of extra code.
 
 
+---
+
+### ADR 19 : Centralized Permission Handling Service
+
+**Status:** Accepted
+
+**Context**  
+Different parts of the application require specific security rules (e.g., only staff can add maintenance updates, but tenants can edit their own requests). Initially, these checks were planned to be handled by Django Mixins in the views (ADR 12), but as the rules became more complex, this led to repetitive code that was hard to audit and maintain.
+
+**Alternatives considered**  
+- **Hardcoding logic in Views**: Makes it difficult to ensure security is consistent and leads to duplication of ownership checks.
+- **Logic in Models**: Mixes security rules with data storage logic, making the models harder to maintain and test.
+- **Django Built-in Permissions**: Too rigid for object-level ownership checks without adding complex third-party packages.
+
+**Decision**  
+We implemented a dedicated `PermissionService` within the service layer. This service contains static methods like `can_update_repair_request` and `can_add_maintenance_update`, which consolidate all authorization rules into a single source of truth.
+
+**Code reference**  
+- `proj_1/housing/services.py:7–25` — Implementation of `PermissionService`.
+- `proj_1/housing/views.py:103, 143` — Views now call the permission service to verify access.
+
+**Consequences**  
+- **Pros:** A single source of truth for all security rules; easier to audit for security vulnerabilities; significantly simplifies view logic.
+- **Cons:** Requires a deliberate call to the service whenever a new secure action is implemented.
+
+
+
