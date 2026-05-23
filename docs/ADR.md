@@ -476,3 +476,29 @@ We implemented a custom `RepairRequestQuerySet` to encapsulate common domain-spe
 - **Cons:** Requires team familiarity with Django’s custom QuerySet and Manager API.
 
 
+---
+
+### ADR 18 : Centralized Domain Exception Strategy
+
+**Status:** Accepted
+
+**Context**  
+As the application logic moved into the Service Layer (ADR 16), we needed a clear way to communicate specific business-level failures (like "this user isn't allowed to do this" or "this request is missing a title") back to the user interface. Relying on generic Python errors or standard Django error pages made it difficult to provide specific feedback.
+
+**Alternatives considered**  
+- **Returning Boolean values**: Tells you if a task failed, but not *why* it failed.
+- **Raising Generic Exceptions (ValueError)**: Harder to catch specifically when multiple things could go wrong.
+- **Handling all errors in Views**: Leads to repetitive try/except blocks and mixes business rules with web logic.
+
+**Decision**  
+We implemented a dedicated exception hierarchy in `exceptions.py`. These "Domain Exceptions" (like `InvalidRepairRequestError`) are raised by the service layer and can be caught specifically by the views to show helpful messages to the user.
+
+**Code reference**  
+- `proj_1/housing/exceptions.py` — The custom error definitions.
+- `proj_1/housing/services.py:32, 40, 62` — Services raising specific domain errors.
+
+**Consequences**  
+- **Pros:** Explicit and self-documenting code; cleaner error handling in the views; decouple business logic errors from framework-specific errors.
+- **Cons:** Requires defining new exception classes for different error types, adding a small amount of extra code.
+
+
