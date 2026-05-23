@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     DashboardView,
+    UserLoginView,
     RepairRequestListView,
     RepairRequestDetailView,
     RepairRequestCreateView,
@@ -16,6 +17,12 @@ from .views import (
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
+
+    path(
+        "login/",
+        UserLoginView.as_view(),
+        name="login"
+    ),
 
     path(
         "dashboard/",

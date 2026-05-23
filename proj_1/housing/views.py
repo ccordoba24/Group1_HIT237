@@ -1,4 +1,5 @@
 from django.contrib.auth import login
+from django.contrib.auth.views import LoginView
 from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.views.generic import (
@@ -27,6 +28,8 @@ class HomeView(TemplateView):
     template_name = "housing/home.html"
 
 
+# --- Authentication Views ---
+
 class RegisterView(CreateView):
     form_class = UserRegisterForm
     template_name = "housing/register.html"
@@ -36,6 +39,13 @@ class RegisterView(CreateView):
         response = super().form_valid(form)
         login(self.request, self.object)
         return response
+
+
+class UserLoginView(LoginView):
+    template_name = "housing/login.html"
+
+    def get_success_url(self):
+        return reverse_lazy("dashboard")
 
 
 class FAQView(TemplateView):
@@ -50,7 +60,7 @@ class AboutView(TemplateView):
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "housing/dashboard.html"
-    login_url = "/admin/login/"
+    login_url = "/login/"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,7 +133,7 @@ class RepairRequestCreateView(LoginRequiredMixin, CreateView):
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
-    login_url = "/admin/login/"
+    login_url = "/login/"
 
     def form_valid(self, form):
         self.object = RepairRequestService.create_repair_request(
@@ -140,7 +150,7 @@ class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
-    login_url = "/admin/login/"
+    login_url = "/login/"
 
     def get_queryset(self):
         if PermissionService.is_staff_or_superuser(self.request.user):
@@ -180,7 +190,7 @@ class MaintenanceUpdateCreateView(LoginRequiredMixin, CreateView):
     model = MaintenanceUpdate
     form_class = MaintenanceUpdateForm
     template_name = "housing/maintenance_update_form.html"
-    login_url = "/admin/login/"
+    login_url = "/login/"
 
     def dispatch(self, request, *args, **kwargs):
         if not PermissionService.can_add_maintenance_update(request.user):
