@@ -423,3 +423,56 @@ We integrated **Claude 3.5 Haiku** and **ChatGPT** into our workflow via VS Code
 **Consequences**  
 **Pros:** Significant reduction in development time, improved code documentation through AI-generated comments, and faster resolution of syntax errors.  
 **Cons:** Requires rigorous manual review to ensure the AI-generated code adheres to DRY principles and project-specific security requirements; potential for "hallucinations" in less common Django library versions.
+
+
+
+---
+
+### ADR 16 : Transition to a Dedicated Service Layer for Business Logic
+
+**Status:** Accepted
+
+**Context**  
+While the "Fat Models, Thin Views" approach (ADR 6) worked for simple logic, the system's growth required more complex coordination between permissions, transactional data updates, and validation. Keeping this logic in models made them bloated, and putting it in views made them difficult to test.
+
+**Alternatives considered**  
+- **Expanding Model Methods**: Risked creating "God Models" that are hard to maintain.  
+- **Logic in ModelForms**: Limits the reuse of business logic to only when a form is present.
+
+**Decision**  
+We introduced a **Service Layer (`services.py`)** to encapsulate business operations and permission checks. Views now act as simple coordinators that delegate tasks to `RepairRequestService` or `PermissionService`.
+
+**Code reference**  
+- `proj_1/housing/services.py` — Implementation of service classes.
+- `proj_1/housing/views.py:86, 111` — Views delegating logic to the service layer.
+
+**Consequences**  
+- **Pros:** Clearer separation of concerns; business logic can be unit-tested without HTTP request mocks; centralized permission management.  
+- **Cons:** Introduces a new layer of abstraction and an additional file to manage in the app.
+
+
+---
+
+### ADR 17 : Encapsulation of Query Logic via Custom QuerySets
+
+**Status:** Accepted
+
+**Context**  
+As the application grew, several views and services needed to perform the same data operations, such as counting maintenance updates or filtering for completed requests. Writing these `.filter()` and `.annotate()` calls directly in the views was repetitive (violating DRY) and made the views harder to read.
+
+**Alternatives considered**  
+- **Manual Filtering in Views**: Leads to code duplication and makes it harder to change business rules later.
+- **Python-level Filtering**: Is significantly slower than performing these operations at the database level.
+
+**Decision**  
+We implemented a custom `RepairRequestQuerySet` to encapsulate common domain-specific queries. This allows us to use descriptive methods like `.completed()` or `.with_update_count()` directly in our code.
+
+**Code reference**  
+- `proj_1/housing/models.py:41–63` — Implementation of `RepairRequestQuerySet`.
+- `proj_1/housing/views.py:43–54, 120–131` — Views using the custom QuerySet methods.
+
+**Consequences**  
+- **Pros:** Much cleaner and more readable view logic; reusable query components; business rules for "open" or "completed" requests are centralized in the model layer.
+- **Cons:** Requires team familiarity with Django’s custom QuerySet and Manager API.
+
+

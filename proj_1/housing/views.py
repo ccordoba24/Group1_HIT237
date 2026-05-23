@@ -1,3 +1,5 @@
+from django.contrib.auth import login
+from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.views.generic import (
     ListView,
@@ -11,7 +13,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .models import RepairRequest, MaintenanceUpdate
-from .forms import RepairRequestForm, MaintenanceUpdateForm
+from .forms import (
+    RepairRequestForm,
+    MaintenanceUpdateForm,
+    UserRegisterForm,
+)
 from .services import RepairRequestService, PermissionService
 
 
@@ -21,8 +27,15 @@ class HomeView(TemplateView):
     template_name = "housing/home.html"
 
 
-class RegisterView(TemplateView):
+class RegisterView(CreateView):
+    form_class = UserRegisterForm
     template_name = "housing/register.html"
+    success_url = reverse_lazy("dashboard")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
 
 
 class FAQView(TemplateView):
@@ -31,6 +44,36 @@ class FAQView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = "housing/about.html"
+
+
+# --- Dashboard ---
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "housing/dashboard.html"
+    login_url = "/admin/login/"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if PermissionService.is_staff_or_superuser(self.request.user):
+            requests = RepairRequest.objects.all()
+        else:
+            requests = RepairRequest.objects.filter(
+                created_by=self.request.user
+            )
+
+        context["total_requests"] = requests.count()
+        context["open_requests"] = requests.open().count()
+        context["completed_requests"] = requests.completed().count()
+
+        context["requests_by_status"] = (
+            requests
+            .values("status")
+            .annotate(total=Count("id"))
+            .order_by("status")
+        )
+
+        return context
 
 
 # --- Repair Request List ---

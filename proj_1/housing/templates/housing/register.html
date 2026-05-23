@@ -3,6 +3,16 @@
 {% block content %}
     <div class="container">
         <h2>Create an account</h2>
-        <p>This is a placeholder registration page. Integrate your auth forms here.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p>
+            After registration, you will be redirected to the dashboard.
+        </p>
     </div>
 {% endblock %}
