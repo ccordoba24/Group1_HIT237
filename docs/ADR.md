@@ -553,3 +553,30 @@ We implemented a dedicated `DashboardView` as the primary landing page after log
 - **Cons:** Adds a new view and template that must be kept in sync with any changes to the underlying model relationships.
 
 
+---
+
+### ADR 21 : Enhanced Admin Interface for Efficient Data Stewardship
+
+**Status:** Accepted
+
+**Context**  
+While the user-facing dashboard (ADR 20) provides a high-level overview, internal staff and housing administrators required a more granular tool for managing complex data relationships. The default Django admin was difficult to use for searching through hundreds of records or finding specific tenant-to-dwelling connections.
+
+**Alternatives considered**  
+- **Custom Staff Portal**: Building a completely separate frontend for staff management, which would have significantly increased development time and complexity.
+- **Default Django Admin**: Leaving the admin panel unconfigured, which led to poor usability and inefficiency in finding specific repair requests.
+
+**Decision**  
+We heavily customized the Django Admin interface through a tailored `admin.py` configuration. By implementing `list_display`, `list_filter`, and `search_fields` across all core models, we converted the generic admin panel into a purpose-built back-office management system.
+
+**Code reference**  
+- `proj_1/housing/admin.py:14–102` — Custom admin configurations for Communities, Dwellings, Tenants, and Repair Requests.
+
+**Consequences**  
+- **Pros:** Dramatic improvement in administrative efficiency; staff can now search and filter data in seconds; reduces the risk of data entry errors.
+- **Cons:** Any changes to the model schema now require corresponding updates in the admin classes to maintain the dashboard's effectiveness.
+
+
+
+
+
