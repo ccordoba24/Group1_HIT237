@@ -605,7 +605,7 @@ We expanded the Django test suite into four focused test classes, each targeting
 - **Pros:** High confidence in the correctness of each layer independently; security rules (ADR 19) are verified automatically; regressions are caught before deployment.
 - **Cons:** Tests must be maintained when models or services change; slightly increases development time per feature.
 
-
+---
 
 ### ADR 23 : Custom Authentication Flow with Auto-Login on Registration
 
@@ -632,4 +632,29 @@ We implemented a custom `UserLoginView` (extending Django's built-in `LoginView`
 
 
 
+---
+
+### ADR 24 : Custom User Registration Form via UserCreationForm Extension
+
+**Status:** Accepted
+
+**Context**  
+Django's default `UserCreationForm` only includes username and password fields. The application needed to optionally collect an email address during registration while still leveraging Django's built-in password validation and user creation logic.
+
+**Alternatives considered**  
+- **Default `UserCreationForm`**: No email field — insufficient for future contact functionality.
+- **Manual `forms.Form`**: Requires re-implementing password hashing and validation from scratch, which is error-prone and a security risk.
+
+**Decision**  
+We extended Django's `UserCreationForm` to create `UserRegisterForm`, adding an optional `email` field. This approach reuses all of Django's secure password handling while allowing the form to be customised.
+
+**Code reference**  
+- `proj_1/housing/forms.py:27–39` — `UserRegisterForm` definition.
+- `proj_1/housing/views.py:33–41` — `RegisterView` using the custom form.
+
+**Consequences**  
+- **Pros:** Inherits all of Django's built-in password validation and security; minimal extra code; easily extensible with additional fields in the future.
+- **Cons:** Any future changes to Django's `UserCreationForm` API may require corresponding updates to this subclass.
+
+---
 
