@@ -578,5 +578,37 @@ We heavily customized the Django Admin interface through a tailored `admin.py` c
 
 
 
+---
+
+### ADR 22 : Expanded Automated Test Suite Covering All Architecture Layers
+
+**Status:** Accepted
+
+**Context**  
+As the codebase grew with a Service Layer (ADR 16), Custom QuerySets (ADR 17), and a Permission Service (ADR 19), it became critical to verify that each layer works correctly and does not break when other parts change. The initial test file only covered basic model behaviour, leaving services and permissions untested.
+
+**Alternatives considered**  
+- **Manual Testing Only**: Quick in the short term but unreliable and does not scale with the number of features.
+- **End-to-End Browser Testing**: Provides full user-journey coverage but requires additional tools and is slower to run.
+
+**Decision**  
+We expanded the Django test suite into four focused test classes, each targeting a specific architecture layer:
+- `RepairRequestModelTests` — Model method correctness.
+- `RepairRequestQuerySetTests` — Custom QuerySet filtering logic.
+- `RepairRequestServiceTests` — Business logic in the service layer, including blocking anonymous users.
+- `RepairRequestViewPermissionTests` — HTTP-level security, ensuring tenants cannot access other users' requests.
+
+**Code reference**  
+- `proj_1/housing/tests.py:11–364` — The complete test suite.
+
+**Consequences**  
+- **Pros:** High confidence in the correctness of each layer independently; security rules (ADR 19) are verified automatically; regressions are caught before deployment.
+- **Cons:** Tests must be maintained when models or services change; slightly increases development time per feature.
+
+
+
+
+
+
 
 
