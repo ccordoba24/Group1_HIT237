@@ -528,4 +528,28 @@ We implemented a dedicated `PermissionService` within the service layer. This se
 - **Cons:** Requires a deliberate call to the service whenever a new secure action is implemented.
 
 
+---
+
+### ADR 20 : Centralized Management Dashboard for Operational Overview
+
+**Status:** Accepted
+
+**Context**  
+As the volume of repair requests grew, tenants and staff needed a high-level summary of the system's status (e.g., total requests, open issues vs. completed ones) at a glance. Initially, users had to scan through long list views or use the Django admin panel, which provided a poor user experience for non-technical tenants.
+
+**Alternatives considered**  
+- **Summary Cards in List Views**: Adding metrics to the top of the existing list view, but this cluttered the interface and slowed down page loads.
+- **Requiring Admin Access for Metrics**: Not feasible for regular tenants who do not have access to the Django backend.
+
+**Decision**  
+We implemented a dedicated `DashboardView` as the primary landing page after login. The dashboard uses the custom `RepairRequestQuerySet` (ADR 17) to efficiently fetch real-time metrics and the `PermissionService` (ADR 19) to ensure that tenants only see data relevant to their own requests while staff see a global overview.
+
+**Code reference**  
+- `proj_1/housing/views.py:61–86` — Logic for aggregating dashboard metrics.
+- `proj_1/housing/templates/housing/dashboard.html` — The new dashboard user interface.
+
+**Consequences**  
+- **Pros:** Significantly improved "at-a-glance" visibility for maintenance status; better user engagement; provides a scalable foundation for future reports or charts.
+- **Cons:** Adds a new view and template that must be kept in sync with any changes to the underlying model relationships.
+
 
