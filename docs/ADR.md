@@ -658,3 +658,31 @@ We extended Django's `UserCreationForm` to create `UserRegisterForm`, adding an 
 
 ---
 
+### ADR 25 : Shared Base Template for Consistent UI Layout
+
+**Status:** Accepted
+
+**Context**  
+As the number of templates grew (home, list, detail, dashboard, etc.), maintaining a consistent navigation bar and page structure across all pages became repetitive and error-prone. Any change to the navigation required updating every individual template file.
+
+**Alternatives considered**  
+- **Copying HTML across each template**: Fast initially but violates DRY and makes global changes (like adding a nav item) extremely tedious.
+- **JavaScript-rendered navigation (SPA approach)**: Overkill for this project's server-side rendering architecture (ADR 4).
+
+**Decision**  
+We implemented a `base.html` template containing the shared site header, navigation bar, and page structure. All other templates extend this base using Django's `{% extends %}` and `{% block content %}` tags, ensuring a consistent look and feel across the entire application.
+
+**Code reference**  
+- `proj_1/housing/templates/housing/base.html:1–88` — The shared base template with navigation.
+- All other templates (e.g., `repair_request_list.html`, `dashboard.html`) — Use `{% extends "housing/base.html" %}`.
+
+**Consequences**  
+- **Pros:** A single change to `base.html` updates the navigation across the entire site; consistent branding and layout; follows Django's DRY template philosophy.
+- **Cons:** All templates are tightly coupled to `base.html`; a structural change to the base (e.g., major redesign) may require updating child template block content.
+
+
+
+
+
+
+
