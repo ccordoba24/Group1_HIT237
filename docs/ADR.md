@@ -607,7 +607,28 @@ We expanded the Django test suite into four focused test classes, each targeting
 
 
 
+### ADR 23 : Custom Authentication Flow with Auto-Login on Registration
 
+**Status:** Accepted
+
+**Context**  
+The original application relied on the Django admin login page for user authentication, which was unsuitable for regular tenants who are not staff and should not access the admin panel. A user-friendly login and registration experience was needed for the public-facing application.
+
+**Alternatives considered**  
+- **Django Admin Login for All Users**: Simple to implement but exposes the admin interface URL to non-staff users and provides a poor user experience.
+- **Third-party packages (django-allauth)**: Feature-rich but adds unnecessary complexity and dependencies for the current scope.
+
+**Decision**  
+We implemented a custom `UserLoginView` (extending Django's built-in `LoginView`) with a dedicated template and a `RegisterView` (extending `CreateView`) that automatically logs the user in upon successful registration using Django's `login()` function.
+
+**Code reference**  
+- `proj_1/housing/views.py:33–48` — `RegisterView` and `UserLoginView` implementations.
+- `proj_1/housing/templates/housing/login.html` — Custom login template.
+- `proj_1/housing/urls.py:21–25` — URL route for the login view.
+
+**Consequences**  
+- **Pros:** Seamless user experience; tenants are redirected to the dashboard immediately after registering; no exposure of the admin panel to regular users.
+- **Cons:** Requires maintaining custom templates and views alongside Django's built-in auth system.
 
 
 
