@@ -1,179 +1,37 @@
 {% extends "housing/base.html" %}
 
 {% block content %}
-    <style>
-        .container {
-            max-width: 900px;
-            margin: 30px auto 0 auto;
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 16px;
-        }
-        .page-header h1 {
-            font-size: 24px;
-            color: #2c3e50;
-            margin: 0;
-        }
-        .back-link {
-            text-decoration: none;
-            color: #ffffff;
-            background-color: #3498db;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .back-link:hover {
-            background-color: #2980b9;
-        }
-        .section-title {
-            font-size: 20px;
-            color: #2980b9;
-            margin-bottom: 16px;
-            margin-top: 36px;
-        }
-        .detail-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 22px 0;
-        }
-        .detail-list li {
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
-        .badge-status {
-            display: inline-block;
-            padding: 3px 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            background-color: #f8e9ca;
-            color: #c5912a;
-            margin-right: 6px;
-        }
-        .links-row {
-            display: flex;
-            gap: 20px;
-            margin-top: 32px;
-        }
-        .action-link {
-            text-decoration: none;
-            color: #fff;
-            background-color: #639922;
-            padding: 8px 18px;
-            border-radius: 7px;
-            font-size: 15px;
-            font-weight: 500;
-            margin-bottom: 0;
-            display: inline-block;
-            margin-right: 12px;
-        }
-        .action-link.blue {
-            background-color: #3498db;
-        }
-        .action-link:hover {
-            background-color: #2980b9;
-        }
-        .updates-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .updates-list li {
-            background: #f6fcf5;
-            border: 1px solid #e5f4e1;
-            border-radius: 7px;
-            padding: 14px 18px;
-            margin-bottom: 18px;
-        }
-        .update-note {
-            font-size: 15px;
-            color: #29314a;
-        }
-        .update-date {
-            font-size: 13px;
-            color: #888;
-            margin-top: 6px;
-            display: block;
-        }
-        .empty-state {
-            color: #999;
-            text-align: center;
-            padding: 25px 0;
-        }
-        @media(max-width:600px){
-            .container { padding:18px }
-            .page-header { flex-direction:column;align-items:flex-start;gap:11px }
-            .links-row { flex-direction:column;gap:12px }
-        }
-    </style>
-    <div class="container">
+<div class="container">
+    <h1>Repair Requests</h1>
 
-        <div class="page-header">
-            <h1>{{ request.title }}</h1>
-            <a href="{% url 'repair-request-list' %}" class="back-link">Back to Requests</a>
-        </div>
+    <p>
+        <a href="{% url 'repair-request-create' %}">
+            Create New Repair Request
+        </a>
+    </p>
 
-        <ul class="detail-list">
-            <li>
-                <span class="badge-status">{{ request.status }}</span>
-            </li>
-            <li>
-                <strong>Category:</strong> {{ request.category.name }}
-            </li>
-            <li>
-                <strong>Dwelling:</strong> {{ request.dwelling.address }}
-            </li>
-            <li>
-                <strong>Tenant:</strong> {{ request.tenant.user.username }}
-            </li>
-            <li>
-                <strong>Description:</strong> {{ request.description }}
-            </li>
-            <li>
-                <strong>Created:</strong> {{ request.created_at|date:"d M Y, H:i" }}
-            </li>
+    {% if requests %}
+        <h2>Request List</h2>
+
+        <ul>
+            {% for request in requests %}
+                <li>
+                    <a href="{% url 'repair-request-detail' request.pk %}">
+                        <strong>{{ request.title }}</strong>
+                    </a>
+
+                    <br>
+                    Status: {{ request.status }}
+                    <br>
+                    Dwelling: {{ request.dwelling.address }}
+                    <br>
+                    Maintenance updates: {{ request.update_count }}
+                </li>
+                <br>
+            {% endfor %}
         </ul>
-
-        <div class="section-title">Maintenance Updates</div>
-
-        <div style="margin-bottom:18px;">
-            <a href="{% url 'maintenance-update-create' request.pk %}" class="action-link">
-                + Add Maintenance Update
-            </a>
-        </div>
-
-        {% if request.updates.all %}
-            <ul class="updates-list">
-                {% for update in request.updates.all %}
-                    <li>
-                        <span class="update-note">{{ update.note }}</span>
-                        <span class="update-date">{{ update.updated_at|date:"d M Y, H:i" }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <div class="empty-state">
-                No maintenance updates recorded.
-            </div>
-        {% endif %}
-
-        <div class="links-row">
-            <a href="{% url 'repair-request-update' request.pk %}" class="action-link blue">
-                Edit this request
-            </a>
-            <a href="{% url 'repair-request-list' %}" class="action-link">
-                Back to Repair Requests
-            </a>
-        </div>
-
-    </div>
+    {% else %}
+        <p>No repair requests found.</p>
+    {% endif %}
+</div>
 {% endblock %}
