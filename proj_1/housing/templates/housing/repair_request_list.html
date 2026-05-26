@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Repair Requests</title>
-</head>
-<body>
+{% extends "housing/base.html" %}
+
+{% block content %}
+<div class="container">
     <h1>Repair Requests</h1>
 
     <p>
@@ -35,5 +33,5 @@
     {% else %}
         <p>No repair requests found.</p>
     {% endif %}
-</body>
-</html>
+</div>
+{% endblock %}

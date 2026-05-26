@@ -56,21 +56,28 @@ class AboutView(TemplateView):
     template_name = "housing/about.html"
 
 
+# --- Shared Permission Query Helper ---
+
+class RepairRequestAccessMixin:
+    def get_accessible_requests(self):
+        if PermissionService.is_staff_or_superuser(self.request.user):
+            return RepairRequest.objects.all()
+
+        return RepairRequest.objects.filter(
+            created_by=self.request.user
+        )
+
+
 # --- Dashboard ---
 
-class DashboardView(LoginRequiredMixin, TemplateView):
+class DashboardView(LoginRequiredMixin, RepairRequestAccessMixin, TemplateView):
     template_name = "housing/dashboard.html"
     login_url = "/login/"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if PermissionService.is_staff_or_superuser(self.request.user):
-            requests = RepairRequest.objects.all()
-        else:
-            requests = RepairRequest.objects.filter(
-                created_by=self.request.user
-            )
+        requests = self.get_accessible_requests()
 
         context["total_requests"] = requests.count()
         context["open_requests"] = requests.open().count()
@@ -88,14 +95,15 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
 # --- Repair Request List ---
 
-class RepairRequestListView(ListView):
+class RepairRequestListView(LoginRequiredMixin, RepairRequestAccessMixin, ListView):
     model = RepairRequest
     template_name = "housing/repair_request_list.html"
     context_object_name = "requests"
+    login_url = "/login/"
 
     def get_queryset(self):
         return (
-            RepairRequest.objects
+            self.get_accessible_requests()
             .select_related(
                 "category",
                 "dwelling",
@@ -109,14 +117,15 @@ class RepairRequestListView(ListView):
 
 # --- Repair Request Detail ---
 
-class RepairRequestDetailView(DetailView):
+class RepairRequestDetailView(LoginRequiredMixin, RepairRequestAccessMixin, DetailView):
     model = RepairRequest
     template_name = "housing/repair_request_detail.html"
     context_object_name = "request"
+    login_url = "/login/"
 
     def get_queryset(self):
         return (
-            RepairRequest.objects
+            self.get_accessible_requests()
             .select_related(
                 "category",
                 "dwelling",
@@ -145,7 +154,7 @@ class RepairRequestCreateView(LoginRequiredMixin, CreateView):
 
 # --- Update Request ---
 
-class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
+class RepairRequestUpdateView(LoginRequiredMixin, RepairRequestAccessMixin, UpdateView):
     model = RepairRequest
     form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
@@ -153,12 +162,7 @@ class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "/login/"
 
     def get_queryset(self):
-        if PermissionService.is_staff_or_superuser(self.request.user):
-            return RepairRequest.objects.all()
-
-        return RepairRequest.objects.filter(
-            created_by=self.request.user
-        )
+        return self.get_accessible_requests()
 
     def form_valid(self, form):
         self.object = RepairRequestService.update_repair_request(
@@ -170,14 +174,15 @@ class RepairRequestUpdateView(LoginRequiredMixin, UpdateView):
 
 # --- Maintenance History ---
 
-class MaintenanceHistoryView(ListView):
+class MaintenanceHistoryView(LoginRequiredMixin, RepairRequestAccessMixin, ListView):
     model = RepairRequest
     template_name = "housing/maintenance_history.html"
     context_object_name = "completed_requests"
+    login_url = "/login/"
 
     def get_queryset(self):
         return (
-            RepairRequest.objects
+            self.get_accessible_requests()
             .completed()
             .with_update_count()
             .order_by("-updated_at")
