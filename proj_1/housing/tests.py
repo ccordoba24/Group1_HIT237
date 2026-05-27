@@ -256,6 +256,10 @@ class RepairRequestViewPermissionTests(TestCase):
             user=self.user,
             dwelling=self.dwelling
         )
+        self.other_tenant = Tenant.objects.create(
+            user=self.other_user,
+            dwelling=self.dwelling
+        )
         self.category = Category.objects.create(
             name="Plumbing"
         )
@@ -267,6 +271,26 @@ class RepairRequestViewPermissionTests(TestCase):
             created_by=self.user,
             title="Broken tap",
             description="Kitchen tap not working",
+            status="pending"
+        )
+
+        self.staff_created_request_for_tenant = RepairRequest.objects.create(
+            dwelling=self.dwelling,
+            tenant=self.tenant,
+            category=self.category,
+            created_by=self.staff_user,
+            title="Staff logged tenant issue",
+            description="Staff created this request for tenant1",
+            status="pending"
+        )
+
+        self.other_user_request = RepairRequest.objects.create(
+            dwelling=self.dwelling,
+            tenant=self.other_tenant,
+            category=self.category,
+            created_by=self.other_user,
+            title="Other tenant request",
+            description="This request belongs to tenant2",
             status="pending"
         )
 
@@ -361,4 +385,118 @@ class RepairRequestViewPermissionTests(TestCase):
         self.assertContains(
             response,
             "Housing Maintenance Dashboard"
+        )
+
+    def test_tenant_can_see_request_linked_to_tenant_profile(self):
+        self.client.login(
+            username="tenant1",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse("repair-request-list")
+        )
+
+        self.assertContains(
+            response,
+            "Broken tap"
+        )
+        self.assertContains(
+            response,
+            "Staff logged tenant issue"
+        )
+
+    def test_normal_user_cannot_see_unrelated_tenant_request(self):
+        self.client.login(
+            username="tenant1",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse("repair-request-list")
+        )
+
+        self.assertNotContains(
+            response,
+            "Other tenant request"
+        )
+
+    def test_normal_user_edit_form_does_not_show_status(self):
+        self.client.login(
+            username="tenant1",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse(
+                "repair-request-update",
+                args=[self.request_obj.id]
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
+        self.assertNotContains(
+            response,
+            'name="status"'
+        )
+
+    def test_staff_edit_form_shows_status(self):
+        self.client.login(
+            username="staffuser",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse(
+                "repair-request-update",
+                args=[self.request_obj.id]
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
+        self.assertContains(
+            response,
+            'name="status"'
+        )
+
+    def test_normal_user_cannot_access_maintenance_update_page(self):
+        self.client.login(
+            username="tenant1",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse(
+                "maintenance-update-create",
+                args=[self.request_obj.id]
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            403
+        )
+
+    def test_staff_can_access_maintenance_update_page(self):
+        self.client.login(
+            username="staffuser",
+            password="pass12345"
+        )
+
+        response = self.client.get(
+            reverse(
+                "maintenance-update-create",
+                args=[self.request_obj.id]
+            )
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200
         )
