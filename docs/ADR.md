@@ -3,14 +3,14 @@
 
 **Project:** Housing Repair Request Management System  
 **Repository:** https://github.com/ccordoba24/Group1_HIT237/  
-**Last Updated:** April 2026
+**Author:** Habiba  
+**Last Updated:** May 2026
 
 This living document records the key architectural and design decisions made throughout the development of the Django-based housing repair request application. Each entry explains the **context**, **alternatives considered**, the **chosen decision with rationale**, exact **code references**, and **consequences**.
 
 The commit history of this file demonstrates how decisions evolved as the project progressed.
 
 ---
-
 
 ### ADR 1 : Normalised Database Models for Housing and Requests
 
@@ -27,14 +27,16 @@ We needed to model Communities, Dwellings, Tenants, Categories, Repair Requests,
 We chose a **fully normalised relational model** using Django `ForeignKey`, `OneToOneField`, and appropriate relationships. This keeps the domain model clean and allows the database to enforce referential integrity.
 
 **Code reference**  
-- `proj_1/housing/models.py:13–22` — Dwelling model  
-- `proj_1/housing/models.py:25–31` — Tenant model  
-- `proj_1/housing/models.py:40–64` — RepairRequest model  
-- `proj_1/housing/models.py:66–76` — MaintenanceUpdate model
+- `proj_1/housing/models.py:6–11` — Community model  
+- `proj_1/housing/models.py:14–23` — Dwelling model  
+- `proj_1/housing/models.py:26–31` — Tenant model  
+- `proj_1/housing/models.py:34–38` — Category model  
+- `proj_1/housing/models.py:64–107` — RepairRequest model (including `created_by`)  
+- `proj_1/housing/models.py:110–121` — MaintenanceUpdate model
 
 **Consequences**  
 **Pros:** Clean domain separation, readable ORM queries, strong data integrity.  
-**Cons:** Requires more joins for complex queries — mitigated using `select_related()` (see ADR 9).
+**Cons:** Requires more joins for complex queries — mitigated using `select_related()` and `prefetch_related()` (see ADR 9).
 
 ---
 
@@ -43,47 +45,48 @@ We chose a **fully normalised relational model** using Django `ForeignKey`, `One
 **Status:** Accepted
 
 **Context**  
-Forms for creating and updating repair requests needed to stay in sync with model validation rules without duplicating code.
+Forms for creating and updating repair requests needed to stay in sync with model validation rules without duplicating code. Staff and tenants require different editable fields (e.g. staff can change `status`).
 
 **Alternatives considered**  
 - **Manual `forms.Form`**: Full control but requires re-declaring every field, increasing risk of missing validation rules.  
 - **Third-party form libraries**: Added unnecessary dependency and learning curve for standard CRUD forms.
 
 **Decision**  
-We used Django’s **`ModelForm`** so form fields and validation are automatically derived from the model. This keeps the code DRY and integrates perfectly with class-based views.
+We used Django’s **`ModelForm`** with role-specific variants: `RepairRequestCreateForm`, `RepairRequestUserUpdateForm`, and `RepairRequestStaffUpdateForm`. `RepairRequestUpdateView` selects the form class based on `PermissionService.is_staff_or_superuser()`.
 
 **Code reference**  
-- `proj_1/housing/forms.py:1–12`
+- `proj_1/housing/forms.py:8–42` — Repair request ModelForms  
+- `proj_1/housing/forms.py:45–50` — MaintenanceUpdateForm  
+- `proj_1/housing/views.py:161–165` — Dynamic form class selection
 
 **Consequences**  
 **Pros:** Less boilerplate, consistent validation, works seamlessly with `CreateView` and `UpdateView`.  
-**Cons:** Reduced flexibility for highly custom input flows (handled via `clean_` methods where needed).
+**Cons:** Reduced flexibility for highly custom input flows (handled via service-layer validation where needed).
 
 ---
-
 
 ### ADR 3 : Class-Based Views with QuerySet Optimisation
 
 **Status:** Accepted
 
 **Context**  
-List and detail views needed to load related data (category, dwelling, tenant, user) efficiently without causing N+1 query problems.
+List and detail views needed to load related data (category, dwelling, tenant, user, updates) efficiently without causing N+1 query problems.
 
 **Alternatives considered**  
 - **Function-based views with manual querysets**: Clear but repetitive and easy to forget eager loading.  
 - **Django REST Framework + SPA**: Modern but far beyond the scope of this assignment.
 
 **Decision**  
-We adopted Django’s **generic class-based views** (`ListView`, `DetailView`, `CreateView`, `UpdateView`) and overrode `get_queryset()` to include `select_related()` for eager loading.
+We adopted Django’s **generic class-based views** (`ListView`, `DetailView`, `CreateView`, `UpdateView`, `TemplateView`) and overrode `get_queryset()` to include `select_related()`, `prefetch_related()`, and custom QuerySet methods.
 
 **Code reference**  
-- `proj_1/housing/views.py:12–17` — List view with `select_related()` and `order_by()`  
-- `proj_1/housing/views.py:25–28` — Detail view queryset  
-- `proj_1/housing/views.py:7–45` — All CBV definitions
+- `proj_1/housing/views.py:93–110` — List view with eager loading and `with_update_count()`  
+- `proj_1/housing/views.py:115–130` — Detail view queryset  
+- `proj_1/housing/views.py:29–217` — All view class definitions
 
 **Consequences**  
 **Pros:** Much less code, consistent patterns across CRUD operations, good performance by default.  
-**Cons:** CBVs can obscure control flow — understanding lifecycle methods (`get_queryset`, `form_valid`, etc.) is important (documented in comments).
+**Cons:** CBVs can obscure control flow — understanding lifecycle methods (`get_queryset`, `form_valid`, `dispatch`, etc.) is important.
 
 ---
 
@@ -99,23 +102,19 @@ We needed a simple, reliable UI that could be quickly built and easily demonstra
 - **Hybrid SSR + JS enhancement**: Added complexity with little benefit for this project’s scope.
 
 **Decision**  
-We used **Django templates** for all primary views. The UI is fully server-rendered with no additional build tools required.
+We used **Django templates** for all primary views. The UI is fully server-rendered with no additional frontend build tools required. Static informational pages (FAQ, About) live in the `housing.extras` app but share templates under `housing/templates/housing/`.
 
 **Code reference**  
-- `proj_1/housing/templates/housing/repair_request_list.html:1–35`  
-- `proj_1/housing/views.py:7–45` (views referencing templates)
-- Additional static pages served as TemplateViews with no model 
-  logic: `HomeView`, `RegisterView`, `FAQView`, `AboutView` 
-  — confirming the template-first approach throughout the project  
-  (`proj_1/housing/views.py` — HomeView, RegisterView, FAQView, AboutView)
-
+- `proj_1/housing/templates/housing/repair_request_list.html` — List template  
+- `proj_1/housing/views.py:29–30` — `HomeView`  
+- `proj_1/housing/extras/views.py:4–9` — `FAQView`, `AboutView`  
+- All templates extend `housing/base.html` (see ADR 26)
 
 **Consequences**  
 **Pros:** Fast development, zero frontend dependencies, straightforward to demo live.  
 **Cons:** Less dynamic than a modern SPA, but a reasonable trade-off for a backend-focused assignment.
 
 ---
-
 
 ### ADR 5 : Resource-Centred URL Structure
 
@@ -129,14 +128,18 @@ URLs needed to be readable, predictable, and intuitive for both users and future
 - **Flat arbitrary URLs**: Simple but inconsistent and harder to maintain long-term.
 
 **Decision**  
-We implemented a **clean, resource-centred URL structure** under the `/requests/` namespace for all repair request operations.
+We implemented a **clean, resource-centred URL structure** under the `/requests/` namespace for repair request operations, with separate routes for auth, dashboard, and history.
 
 **Code reference**  
-- `proj_1/housing/urls.py` — full urlpatterns including:
+- `proj_1/housing/urls.py` — Core urlpatterns including:
   - `/` — HomeView  
+  - `/login/`, `/logout/`, `/register/` — Authentication  
+  - `/dashboard/` — DashboardView  
   - `/requests/` — list, create, detail, edit  
-  - `/history/` — completed requests (MaintenanceHistoryView)  
-  - `/register/`, `/faq/`, `/about/` — static info pages
+  - `/requests/<pk>/update/` — maintenance update create  
+  - `/history/` — MaintenanceHistoryView  
+- `proj_1/housing/extras/urls.py` — `/faq/`, `/about/`  
+- `proj_1/proj_1/urls.py` — Includes both `housing.urls` and `housing.extras.urls`
 
 **Consequences**  
 **Pros:** Easy to understand, maps directly to views, and is REST-friendly.  
@@ -153,17 +156,18 @@ The assessment required deliberate application and clear documentation of at lea
 
 **Decision**  
 We applied and documented the following core philosophies:  
-- **DRY (Don’t Repeat Yourself)** — Validation logic lives in `ModelForm` and model methods.  
-- **Fat Models, Thin Views** — Business logic (e.g. `is_open()`, `open_requests_count`) resides in the models.  
+- **DRY (Don’t Repeat Yourself)** — Validation logic lives in `ModelForm`, custom QuerySets, and the service layer.  
+- **Fat Models, Thin Views** — Domain helpers (e.g. `is_open()`, `open_requests_count()`) reside in models; complex coordination moved to services (ADR 16).  
 - **Convention over Configuration** — Standard Django app and template structure is used so the framework auto-discovers files.
 
 **Code reference**  
-- DRY & Fat Models: `proj_1/housing/models.py:21–22`, `proj_1/housing/models.py:59–63`, `proj_1/housing/forms.py:5–12`  
-- Convention over Configuration: `proj_1/proj_1/settings.py:21–29`, `proj_1/housing/templates/housing/repair_request_list.html:1–35`
+- DRY & Fat Models: `proj_1/housing/models.py:22–23`, `proj_1/housing/models.py:100–107`, `proj_1/housing/forms.py:8–42`  
+- Service layer (complements thin views): `proj_1/housing/services.py`  
+- Convention over Configuration: `proj_1/proj_1/settings.py`, `proj_1/housing/templates/housing/`
 
 **Consequences**  
 **Pros:** Cleaner, more maintainable code that clearly meets assessment requirements.  
-**Cons:** Model-heavy logic means tests require more model setup, but this is a worthwhile trade-off.
+**Cons:** Model-heavy logic plus a service layer means tests require more setup, but this is a worthwhile trade-off.
 
 ---
 
@@ -175,24 +179,26 @@ We applied and documented the following core philosophies:
 We needed to clearly explain which design patterns were used and why they were appropriate for this project.
 
 **Alternatives considered**  
-- Service layer or Repository pattern: More explicit separation but added abstraction not encouraged by Django’s philosophy.
+- Service layer or Repository pattern: More explicit separation; we adopted a lightweight service layer (ADR 16) without full repository abstraction.
 
 **Decision**  
-We used four idiomatic Django patterns:  
+We used idiomatic Django patterns plus project-specific extensions:  
 - Generic class-based views for CRUD operations  
 - ModelForm pattern for DRY form handling  
-- QuerySet optimisation with `select_related()`  
-- Related-name reverse relations for clean model navigation
+- QuerySet optimisation with `select_related()` and `prefetch_related()`  
+- Custom QuerySet manager for reusable filters (ADR 18)  
+- Related-name reverse relations for clean model navigation  
+- Service layer for permissions and business operations (ADR 16, ADR 20)
 
 **Code reference**  
-- Generic CBVs: `proj_1/housing/views.py:7–45`  
-- ModelForm: `proj_1/housing/forms.py:5–12`  
-- QuerySet optimisation: `proj_1/housing/views.py:12–17`  
-- Reverse relations: `proj_1/housing/models.py:66–71`
+- Generic CBVs: `proj_1/housing/views.py:29–217`  
+- ModelForms: `proj_1/housing/forms.py:8–50`  
+- QuerySet optimisation: `proj_1/housing/views.py:99–110`, `proj_1/housing/views.py:121–130`  
+- Reverse relations: `proj_1/housing/models.py:77–83`, `proj_1/housing/models.py:111–115`
 
 **Consequences**  
 **Pros:** Patterns are familiar to Django developers and easy to explain in the viva.  
-**Cons:** Some abstraction (especially in CBVs) requires understanding of Django’s internal lifecycle.
+**Cons:** Some abstraction (especially in CBVs and services) requires understanding of Django’s internal lifecycle.
 
 ---
 
@@ -208,13 +214,13 @@ The domain contains natural relationships between tenants, dwellings, communitie
 - Using JSON fields for nested data: Flexible but poor for querying and migrations.
 
 **Decision**  
-We used `ForeignKey` and `OneToOneField` with `related_name` arguments throughout the models to create clear, enforceable relationships.
+We used `ForeignKey` and `OneToOneField` with `related_name` arguments throughout the models to create clear, enforceable relationships. `RepairRequest.created_by` links each request to the submitting user.
 
 **Code reference**  
-- `proj_1/housing/models.py:13–16` — Dwelling → Community  
-- `proj_1/housing/models.py:25–27` — Tenant → User  
-- `proj_1/housing/models.py:47–51` — RepairRequest relationships  
-- `proj_1/housing/models.py:66–71` — MaintenanceUpdate reverse relation
+- `proj_1/housing/models.py:15` — Dwelling → Community  
+- `proj_1/housing/models.py:27` — Tenant → User  
+- `proj_1/housing/models.py:73–83` — RepairRequest relationships (dwelling, tenant, category, created_by)  
+- `proj_1/housing/models.py:111–115` — MaintenanceUpdate → RepairRequest (`related_name="updates"`)
 
 **Consequences**  
 **Pros:** Expressive queries, database-enforced integrity, easy reverse lookups.  
@@ -235,12 +241,13 @@ List and detail views display data from multiple related models. Without optimis
 - `prefetch_related()` for everything: Overkill for single-valued foreign keys.
 
 **Decision**  
-We used the QuerySet API idiomatically with `select_related()` for ForeignKey/OneToOne fields, `order_by()`, and encapsulated filtering logic in model methods.
+We used the QuerySet API idiomatically with `select_related()` for ForeignKey/OneToOne fields, `prefetch_related()` for reverse many relations (`updates`), `order_by()`, and encapsulated filtering logic in custom QuerySet methods (ADR 18).
 
 **Code reference**  
-- `proj_1/housing/views.py:12–17` — `select_related("category", "dwelling", "tenant__user").order_by("-created_at")`  
-- `proj_1/housing/views.py:25–28` — Detail view  
-- `proj_1/housing/models.py:21–22` — Model method using `exclude()`
+- `proj_1/housing/views.py:99–110` — `select_related()`, `prefetch_related("updates")`, `with_update_count()`  
+- `proj_1/housing/views.py:121–130` — Detail view eager loading  
+- `proj_1/housing/models.py:22–23` — Model method using `exclude()`  
+- `proj_1/housing/models.py:41–61` — Custom QuerySet methods
 
 **Consequences**  
 **Pros:** Eliminates N+1 queries, improves performance, keeps code readable and reusable.  
@@ -260,10 +267,10 @@ We wanted consistent create, list, detail, and update flows without repeating bo
 - API-first approach: Out of scope for this project.
 
 **Decision**  
-We used Django’s generic class-based views (`ListView`, `DetailView`, `CreateView`, `UpdateView`) and customised them only where necessary by overriding specific methods.
+We used Django’s generic class-based views (`ListView`, `DetailView`, `CreateView`, `UpdateView`, `TemplateView`) and customised them only where necessary by overriding specific methods.
 
 **Code reference**  
-- `proj_1/housing/views.py:7–45` — All four CBV classes
+- `proj_1/housing/views.py:29–217` — All view classes including auth, dashboard, CRUD, and maintenance updates
 
 **Consequences**  
 **Pros:** Consistent structure, minimal repetition, easy to extend.  
@@ -286,7 +293,7 @@ We needed user authentication together with a Tenant profile. Choosing the right
 We used Django’s **default `auth.User`** model with a `OneToOneField` to the Tenant model. We documented the path to switch to a custom user model later if requirements change.
 
 **Code reference**  
-- `proj_1/housing/models.py:23–31` — Tenant model linking to User
+- `proj_1/housing/models.py:26–31` — Tenant model linking to User
 
 **Consequences**  
 **Pros:** Quick to implement, well understood, low maintenance for current scope.  
@@ -294,28 +301,34 @@ We used Django’s **default `auth.User`** model with a `OneToOneField` to the T
 
 ---
 
-### ADR 12 : Permission Handling with LoginRequiredMixin and Planned RBAC
+### ADR 12 : Permission Handling with LoginRequiredMixin and Access Control
 
-**Status:** Accepted (Partially Implemented)
+**Status:** Accepted
 
 **Context**  
-Different user roles (tenants vs staff) require different levels of access to repair requests.
+Different user roles (tenants vs staff) require different levels of access to repair requests. Views must not expose other users’ data.
 
-**What’s implemented**  
-`LoginRequiredMixin` is applied to create and update views to protect them from unauthenticated users.
+**Alternatives considered**  
+- **Login only**: Insufficient — authenticated tenants could still access others’ requests.  
+- **Django built-in permissions only**: Too rigid for object-level ownership without extra packages.  
+- **Hardcoded checks in every view**: Repetitive and error-prone.
 
-**Planned**  
-Full role-based access control using custom mixins (`TenantRequiredMixin`, `StaffRequiredMixin`) and object-level ownership checks.
+**Decision**  
+We implemented layered access control:  
+- `LoginRequiredMixin` on all protected views  
+- `RepairRequestAccessMixin` filters querysets so tenants see only their own requests (by `created_by` or linked `tenant__user`); staff see all  
+- `PermissionService` centralises rules for updates and maintenance updates (see ADR 20)  
+- `MaintenanceUpdateCreateView.dispatch()` blocks non-staff from adding updates
 
 **Code reference**  
-- `proj_1/housing/views.py` — `RepairRequestCreateView` and `RepairRequestUpdateView` inherit `LoginRequiredMixin`
+- `proj_1/housing/views.py:55–64` — `RepairRequestAccessMixin`  
+- `proj_1/housing/views.py:68–217` — Protected views using `LoginRequiredMixin`  
+- `proj_1/housing/views.py:200–206` — Staff-only maintenance update check  
+- `proj_1/housing/services.py:7–36` — `PermissionService`
 
 **Consequences**  
-**Pros:** Basic protection is in place with minimal code.  
-**Cons:** Currently only login protection; full RBAC and ownership checks are still to be implemented for finer control.
-
----
-
+**Pros:** Login protection plus object-level filtering; staff/tenant form differences enforced in views and services.  
+**Cons:** `RepairRequestAccessMixin` must be applied consistently on any new request-scoped views.
 
 ---
 
@@ -352,79 +365,59 @@ We initially prototyped with function-based views for quick iteration. As the pr
 
 ---
 
-## ADR 14 — Maintenance history as a separate filtered view
+### ADR 14 : Maintenance History as a Separate Filtered View
 
-**Status: Accepted**
-
-**Context** 
-Users need a way to view completed repair requests separately 
-from the active request list. Mixing completed and open requests 
-in one view makes it harder to track ongoing issues vs resolved ones.
-
-**Alternatives considered** 
-1. Add a filter parameter to the existing RepairRequestListView 
-   (e.g., ?status=completed)
-   - Pros: reuses existing view, fewer URL routes
-   - Cons: adds conditional logic to the view, complicates the 
-     template, harder to give the page its own layout and heading
-
-2. Dedicated MaintenanceHistoryView as a separate ListView
-   - Pros: single responsibility, clean URL (/history/), 
-     template can be tailored specifically for completed requests
-   - Cons: slight code duplication (another ListView class)
-
-3. Handle in the admin panel only
-   - Pros: no extra code
-   - Cons: regular users/tenants can't access the admin panel
-
-**Decision**
-We created a separate `MaintenanceHistoryView` that filters 
-`RepairRequest` objects by `status="completed"` and orders 
-by `-updated_at` so the most recently resolved requests appear 
-first. This keeps the view focused and the URL meaningful.
-
-**Code reference**
-- `proj_1/housing/views.py` — `MaintenanceHistoryView` 
-  (filters: `.filter(status="completed").order_by("-updated_at")`)
-- `proj_1/housing/urls.py` — `path("history/", ...)`
-
-**Consequences**
-- Pros: clear separation between active and resolved requests, 
-  clean dedicated URL, easy to extend (e.g. add date range filters)
-- Cons: if filtering logic changes (e.g. adding an "archived" 
-  status), both this view and RepairRequestListView may need 
-  updating separately
-
-This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. The commit history shows these decisions were revisited and refined throughout development.
-
-## ADR 15 — AI-Assisted Development with Claude 2.5 Haiku and ChatGPT
-
-**Status: Accepted**
-
-**Context** 
-To accelerate the development of the Django application, AI tools are used throughout the project
+**Status:** Accepted
 
 **Context**  
-To accelerate the development lifecycle of the Django application, we required tools that could assist with boilerplate generation, complex ORM query construction, and debugging within the **MS Visual Studio Code** environment.
+Users need a way to view completed repair requests separately from the active request list. Mixing completed and open requests in one view makes it harder to track ongoing issues vs resolved ones.
 
 **Alternatives considered**  
-- **Manual Coding Only**: Ensured 100% human-authored logic but significantly slows down the implementation of repetitive patterns
+1. Add a filter parameter to the existing `RepairRequestListView` (e.g. `?status=completed`)  
+   - Pros: reuses existing view, fewer URL routes  
+   - Cons: adds conditional logic to the view, complicates the template  
+2. Dedicated `MaintenanceHistoryView` as a separate `ListView`  
+   - Pros: single responsibility, clean URL (`/history/`), tailored template  
+   - Cons: slight code duplication (another ListView class)  
+3. Handle in the admin panel only  
+   - Pros: no extra code  
+   - Cons: regular users/tenants cannot access the admin panel
 
 **Decision**  
-We integrated **Claude 3.5 Haiku** and **ChatGPT** into our workflow via VS Code extensions and web interfaces. 
-- **Claude 3.5 Haiku** was primarily used for rapid code generation and refactoring due to its high speed and concise output.
-- **ChatGPT** was utilized for high-level architectural brainstorming and explaining complex Django error traces.
-- **GitHub Copilot**: Integrated with VS Code was used for basic setup. 
+We created a separate `MaintenanceHistoryView` that uses the custom QuerySet `.completed()` method and orders by `-updated_at`. It reuses `RepairRequestAccessMixin` so tenants only see their own completed requests.
 
 **Code reference**  
-- `proj_1/housing/views.py` — Logic for complex `get_queryset` overrides was refined using AI suggestions.
-- `proj_1/housing/management/commands/seed_data.py` — Initial boilerplate for the management command was generated via AI.
+- `proj_1/housing/views.py:177–189` — `MaintenanceHistoryView`  
+- `proj_1/housing/urls.py:68–72` — `path("history/", ...)`  
+- `proj_1/housing/templates/housing/maintenance_history.html`
 
 **Consequences**  
-**Pros:** Significant reduction in development time, improved code documentation through AI-generated comments, and faster resolution of syntax errors.  
-**Cons:** Requires rigorous manual review to ensure the AI-generated code adheres to DRY principles and project-specific security requirements; potential for "hallucinations" in less common Django library versions.
+**Pros:** Clear separation between active and resolved requests; clean dedicated URL; easy to extend (e.g. date range filters).  
+**Cons:** If filtering logic changes, both this view and `RepairRequestListView` may need updating separately.
 
+---
 
+### ADR 15 : AI-Assisted Development
+
+**Status:** Accepted
+
+**Context**  
+To accelerate the development lifecycle of the Django application, we used AI tools for boilerplate generation, ORM query construction, debugging, and documentation within the development environment.
+
+**Alternatives considered**  
+- **Manual coding only**: Ensured fully human-reviewed logic but significantly slowed repetitive patterns.
+
+**Decision**  
+We integrated **Claude** and **ChatGPT** into our workflow for code generation, refactoring, architectural brainstorming, and error explanation. All AI-generated code was manually reviewed before commit.
+
+**Code reference**  
+- `proj_1/housing/views.py` — Complex `get_queryset` and mixin patterns refined with AI assistance  
+- `proj_1/housing/management/commands/seed_data.py` — Initial management command boilerplate  
+- `proj_1/housing/static/housing/css/main.css` — Shared stylesheet structure and layout
+
+**Consequences**  
+**Pros:** Significant reduction in development time; faster resolution of syntax and framework errors.  
+**Cons:** Requires rigorous manual review to ensure code adheres to DRY principles and project-specific security requirements.
 
 ---
 
@@ -433,22 +426,23 @@ We integrated **Claude 3.5 Haiku** and **ChatGPT** into our workflow via VS Code
 **Status:** Accepted
 
 **Context**  
-While the "Fat Models, Thin Views" approach (ADR 6) worked for simple logic, the system's growth required more complex coordination between permissions, transactional data updates, and validation. Keeping this logic in models made them bloated, and putting it in views made them difficult to test.
+While the "Fat Models, Thin Views" approach (ADR 6) worked for simple logic, the system's growth required more complex coordination between permissions, transactional data updates, and validation. Keeping this logic only in models made them bloated; putting it in views made them difficult to test.
 
 **Alternatives considered**  
-- **Expanding Model Methods**: Risked creating "God Models" that are hard to maintain.  
+- **Expanding model methods**: Risked creating "God Models" that are hard to maintain.  
 - **Logic in ModelForms**: Limits the reuse of business logic to only when a form is present.
 
 **Decision**  
-We introduced a **Service Layer (`services.py`)** to encapsulate business operations and permission checks. Views now act as simple coordinators that delegate tasks to `RepairRequestService` or `PermissionService`.
+We introduced a **Service Layer (`services.py`)** to encapsulate business operations and permission checks. Views delegate create/update flows to `RepairRequestService` and authorization to `PermissionService`.
 
 **Code reference**  
-- `proj_1/housing/services.py` — Implementation of service classes.
-- `proj_1/housing/views.py:86, 111` — Views delegating logic to the service layer.
+- `proj_1/housing/services.py` — `PermissionService` and `RepairRequestService`  
+- `proj_1/housing/views.py:142–147`, `167–172` — Views delegating to the service layer  
+- `proj_1/housing/exceptions.py` — Domain exceptions raised by services
 
 **Consequences**  
-- **Pros:** Clearer separation of concerns; business logic can be unit-tested without HTTP request mocks; centralized permission management.  
-- **Cons:** Additional indirection layer adds complexity; service classes must be kept minimal and focused.
+**Pros:** Clearer separation of concerns; business logic can be unit-tested without HTTP mocks; centralized permission management.  
+**Cons:** Additional indirection; service classes must be kept minimal and focused.
 
 ---
 
@@ -457,255 +451,271 @@ We introduced a **Service Layer (`services.py`)** to encapsulate business operat
 **Status:** Accepted
 
 **Context**  
-FAQ and About pages were initially part of the housing app but logically represent static information pages separate from core housing repair functionality. That violated single responsibility so changes were made.
+FAQ and About pages were initially part of the housing app but logically represent static information separate from core repair functionality. That violated single responsibility, so they were moved.
 
 **Decision**  
-Created a new `housing.extras` sub-app containing `FAQView` and `AboutView`. Templates moved to shared `housing/templates/housing/` folder for consistency. Added links to FAQ and About cards on home page.
+We created a `housing.extras` sub-app containing `FAQView` and `AboutView`. Templates remain under `housing/templates/housing/` for consistency. The home page links to FAQ and About via navigation cards.
 
 **Code reference**  
 - `proj_1/housing/extras/views.py` — FAQ and About views  
-- `proj_1/housing/extras/urls.py` — Routing  
-- `proj_1/housing/templates/housing/faq.html`, `about.html` — Expanded content with NT-specific guidance  
-- `proj_1/housing/templates/housing/home.html` — Added FAQ and About cards
+- `proj_1/housing/extras/urls.py` — Routing for `/faq/` and `/about/`  
+- `proj_1/proj_1/settings.py` — `housing.extras` in `INSTALLED_APPS`  
+- `proj_1/housing/templates/housing/faq.html`, `about.html`, `home.html`
 
 **Consequences**  
-- **Pros:** Better separation of concerns; easier to maintain content-rich pages; reusable extras structure for future static pages.  
-- **Cons:** Slight extra folder nesting; minor URL configuration overhead.  
-- **Cons:** Introduces a new layer of abstraction and an additional file to manage in the app.
-
+**Pros:** Better separation of concerns; easier to maintain content-rich pages; reusable structure for future static pages.  
+**Cons:** Slight extra folder nesting and URL include configuration.
 
 ---
 
-### ADR 17 : Encapsulation of Query Logic via Custom QuerySets
+### ADR 18 : Encapsulation of Query Logic via Custom QuerySets
 
 **Status:** Accepted
 
 **Context**  
-As the application grew, several views and services needed to perform the same data operations, such as counting maintenance updates or filtering for completed requests. Writing these `.filter()` and `.annotate()` calls directly in the views was repetitive (violating DRY) and made the views harder to read.
+As the application grew, several views and services needed to perform the same data operations, such as counting maintenance updates or filtering for completed requests. Writing these `.filter()` and `.annotate()` calls directly in views was repetitive (violating DRY) and made views harder to read.
 
 **Alternatives considered**  
-- **Manual Filtering in Views**: Leads to code duplication and makes it harder to change business rules later.
-- **Python-level Filtering**: Is significantly slower than performing these operations at the database level.
+- **Manual filtering in views**: Leads to code duplication and makes it harder to change business rules later.  
+- **Python-level filtering**: Is significantly slower than performing these operations at the database level.
 
 **Decision**  
-We implemented a custom `RepairRequestQuerySet` to encapsulate common domain-specific queries. This allows us to use descriptive methods like `.completed()` or `.with_update_count()` directly in our code.
+We implemented a custom `RepairRequestQuerySet` with methods such as `.open()`, `.completed()`, `.pending()`, `.in_progress()`, and `.with_update_count()`, exposed via `RepairRequest.objects`.
 
 **Code reference**  
-- `proj_1/housing/models.py:41–63` — Implementation of `RepairRequestQuerySet`.
-- `proj_1/housing/views.py:43–54, 120–131` — Views using the custom QuerySet methods.
+- `proj_1/housing/models.py:41–71` — `RepairRequestQuerySet` and manager  
+- `proj_1/housing/views.py:78–79`, `99–110`, `183–189` — Views using custom QuerySet methods
 
 **Consequences**  
-- **Pros:** Much cleaner and more readable view logic; reusable query components; business rules for "open" or "completed" requests are centralized in the model layer.
-- **Cons:** Requires team familiarity with Django’s custom QuerySet and Manager API.
-
+**Pros:** Cleaner view logic; reusable query components; business rules for open/completed requests are centralized.  
+**Cons:** Requires familiarity with Django’s custom QuerySet and Manager API.
 
 ---
 
-### ADR 18 : Centralized Domain Exception Strategy
+### ADR 19 : Centralized Domain Exception Strategy
 
 **Status:** Accepted
 
 **Context**  
-As the application logic moved into the Service Layer (ADR 16), we needed a clear way to communicate specific business-level failures (like "this user isn't allowed to do this" or "this request is missing a title") back to the user interface. Relying on generic Python errors or standard Django error pages made it difficult to provide specific feedback.
+As application logic moved into the service layer (ADR 16), we needed a clear way to communicate business-level failures (invalid data, unauthorized actions) back to callers without relying on generic Python errors.
 
 **Alternatives considered**  
-- **Returning Boolean values**: Tells you if a task failed, but not *why* it failed.
-- **Raising Generic Exceptions (ValueError)**: Harder to catch specifically when multiple things could go wrong.
-- **Handling all errors in Views**: Leads to repetitive try/except blocks and mixes business rules with web logic.
+- **Returning boolean values**: Tells you if a task failed, but not why.  
+- **Raising generic exceptions (`ValueError`)**: Harder to catch specifically.  
+- **Handling all errors in views**: Leads to repetitive try/except blocks.
 
 **Decision**  
-We implemented a dedicated exception hierarchy in `exceptions.py`. These "Domain Exceptions" (like `InvalidRepairRequestError`) are raised by the service layer and can be caught specifically by the views to show helpful messages to the user.
+We implemented a dedicated exception hierarchy in `exceptions.py`. Domain exceptions (`InvalidRepairRequestError`, `UnauthorizedRepairActionError`) are raised by the service layer and can be caught specifically by views or tests.
 
 **Code reference**  
-- `proj_1/housing/exceptions.py` — The custom error definitions.
-- `proj_1/housing/services.py:32, 40, 62` — Services raising specific domain errors.
+- `proj_1/housing/exceptions.py` — Custom error definitions  
+- `proj_1/housing/services.py:44–46`, `52–54`, `64–66`, `74–76`, `78–80` — Services raising domain errors
 
 **Consequences**  
-- **Pros:** Explicit and self-documenting code; cleaner error handling in the views; decouple business logic errors from framework-specific errors.
-- **Cons:** Requires defining new exception classes for different error types, adding a small amount of extra code.
-
+**Pros:** Explicit, self-documenting code; decouples business errors from framework errors.  
+**Cons:** Requires defining new exception classes for additional failure types.
 
 ---
 
-### ADR 19 : Centralized Permission Handling Service
+### ADR 20 : Centralized Permission Handling Service
 
 **Status:** Accepted
 
 **Context**  
-Different parts of the application require specific security rules (e.g., only staff can add maintenance updates, but tenants can edit their own requests). Initially, these checks were planned to be handled by Django Mixins in the views (ADR 12), but as the rules became more complex, this led to repetitive code that was hard to audit and maintain.
+Different parts of the application require specific security rules (e.g. only staff can add maintenance updates; tenants can edit their own requests). Scattering these checks across views led to duplication and audit difficulty.
 
 **Alternatives considered**  
-- **Hardcoding logic in Views**: Makes it difficult to ensure security is consistent and leads to duplication of ownership checks.
-- **Logic in Models**: Mixes security rules with data storage logic, making the models harder to maintain and test.
-- **Django Built-in Permissions**: Too rigid for object-level ownership checks without adding complex third-party packages.
+- **Hardcoding logic in views**: Difficult to ensure consistency.  
+- **Logic in models**: Mixes security with data storage.  
+- **Django built-in permissions only**: Too rigid for object-level ownership.
 
 **Decision**  
-We implemented a dedicated `PermissionService` within the service layer. This service contains static methods like `can_update_repair_request` and `can_add_maintenance_update`, which consolidate all authorization rules into a single source of truth.
+We implemented `PermissionService` with static methods such as `is_staff_or_superuser`, `can_update_repair_request`, and `can_add_maintenance_update`, used by views, services, and tests.
 
 **Code reference**  
-- `proj_1/housing/services.py:7–25` — Implementation of `PermissionService`.
-- `proj_1/housing/views.py:103, 143` — Views now call the permission service to verify access.
+- `proj_1/housing/services.py:7–36` — `PermissionService`  
+- `proj_1/housing/views.py:57`, `162`, `201` — Views using permission checks  
+- `proj_1/housing/services.py:70–76` — Service-layer authorization on update
 
 **Consequences**  
-- **Pros:** A single source of truth for all security rules; easier to audit for security vulnerabilities; significantly simplifies view logic.
-- **Cons:** Requires a deliberate call to the service whenever a new secure action is implemented.
-
+**Pros:** Single source of truth for security rules; easier to audit; simplifies view logic.  
+**Cons:** Requires calling the service whenever a new secure action is implemented.
 
 ---
 
-### ADR 20 : Centralized Management Dashboard for Operational Overview
+### ADR 21 : Centralized Management Dashboard for Operational Overview
 
 **Status:** Accepted
 
 **Context**  
-As the volume of repair requests grew, tenants and staff needed a high-level summary of the system's status (e.g., total requests, open issues vs. completed ones) at a glance. Initially, users had to scan through long list views or use the Django admin panel, which provided a poor user experience for non-technical tenants.
+Tenants and staff needed a high-level summary of request status (totals, open vs completed, breakdown by status) without scanning long list views or using the Django admin.
 
 **Alternatives considered**  
-- **Summary Cards in List Views**: Adding metrics to the top of the existing list view, but this cluttered the interface and slowed down page loads.
-- **Requiring Admin Access for Metrics**: Not feasible for regular tenants who do not have access to the Django backend.
+- **Summary cards in list views**: Cluttered the interface.  
+- **Admin-only metrics**: Not accessible to regular tenants.
 
 **Decision**  
-We implemented a dedicated `DashboardView` as the primary landing page after login. The dashboard uses the custom `RepairRequestQuerySet` (ADR 17) to efficiently fetch real-time metrics and the `PermissionService` (ADR 19) to ensure that tenants only see data relevant to their own requests while staff see a global overview.
+We implemented `DashboardView` as the post-login landing page. It uses `RepairRequestAccessMixin` and custom QuerySet methods to show scoped metrics and status aggregation.
 
 **Code reference**  
-- `proj_1/housing/views.py:61–86` — Logic for aggregating dashboard metrics.
-- `proj_1/housing/templates/housing/dashboard.html` — The new dashboard user interface.
+- `proj_1/housing/views.py:68–88` — Dashboard context aggregation  
+- `proj_1/housing/templates/housing/dashboard.html` — Dashboard UI  
+- `proj_1/housing/urls.py:32–36` — `/dashboard/` route
 
 **Consequences**  
-- **Pros:** Significantly improved "at-a-glance" visibility for maintenance status; better user engagement; provides a scalable foundation for future reports or charts.
-- **Cons:** Adds a new view and template that must be kept in sync with any changes to the underlying model relationships.
-
+**Pros:** Improved at-a-glance visibility; better user engagement; foundation for future reports.  
+**Cons:** Must stay in sync with model and permission changes.
 
 ---
 
-### ADR 21 : Enhanced Admin Interface for Efficient Data Stewardship
+### ADR 22 : Enhanced Admin Interface for Efficient Data Stewardship
 
 **Status:** Accepted
 
 **Context**  
-While the user-facing dashboard (ADR 20) provides a high-level overview, internal staff and housing administrators required a more granular tool for managing complex data relationships. The default Django admin was difficult to use for searching through hundreds of records or finding specific tenant-to-dwelling connections.
+Staff and administrators needed a granular tool for managing data relationships. The default Django admin was difficult to use for searching through records or finding tenant-to-dwelling connections.
 
 **Alternatives considered**  
-- **Custom Staff Portal**: Building a completely separate frontend for staff management, which would have significantly increased development time and complexity.
-- **Default Django Admin**: Leaving the admin panel unconfigured, which led to poor usability and inefficiency in finding specific repair requests.
+- **Custom staff portal**: Significantly more development time.  
+- **Default Django admin unconfigured**: Poor usability.
 
 **Decision**  
-We heavily customized the Django Admin interface through a tailored `admin.py` configuration. By implementing `list_display`, `list_filter`, and `search_fields` across all core models, we converted the generic admin panel into a purpose-built back-office management system.
+We customized the Django Admin via `admin.py` with `list_display`, `list_filter`, and `search_fields` across core models.
 
 **Code reference**  
-- `proj_1/housing/admin.py:14–102` — Custom admin configurations for Communities, Dwellings, Tenants, and Repair Requests.
+- `proj_1/housing/admin.py:1–102` — Admin configurations for all housing models
 
 **Consequences**  
-- **Pros:** Dramatic improvement in administrative efficiency; staff can now search and filter data in seconds; reduces the risk of data entry errors.
-- **Cons:** Any changes to the model schema now require corresponding updates in the admin classes to maintain the dashboard's effectiveness.
-
-
+**Pros:** Improved administrative efficiency; fast search and filter.  
+**Cons:** Model schema changes require corresponding admin updates.
 
 ---
 
-### ADR 22 : Expanded Automated Test Suite Covering All Architecture Layers
+### ADR 23 : Expanded Automated Test Suite Covering All Architecture Layers
 
 **Status:** Accepted
 
 **Context**  
-As the codebase grew with a Service Layer (ADR 16), Custom QuerySets (ADR 17), and a Permission Service (ADR 19), it became critical to verify that each layer works correctly and does not break when other parts change. The initial test file only covered basic model behaviour, leaving services and permissions untested.
+As the codebase grew with a service layer (ADR 16), custom QuerySets (ADR 18), and permission service (ADR 20), it became critical to verify each layer independently.
 
 **Alternatives considered**  
-- **Manual Testing Only**: Quick in the short term but unreliable and does not scale with the number of features.
-- **End-to-End Browser Testing**: Provides full user-journey coverage but requires additional tools and is slower to run.
+- **Manual testing only**: Unreliable and does not scale.  
+- **End-to-end browser testing**: Slower and requires additional tools.
 
 **Decision**  
-We expanded the Django test suite into four focused test classes, each targeting a specific architecture layer:
-- `RepairRequestModelTests` — Model method correctness.
-- `RepairRequestQuerySetTests` — Custom QuerySet filtering logic.
-- `RepairRequestServiceTests` — Business logic in the service layer, including blocking anonymous users.
-- `RepairRequestViewPermissionTests` — HTTP-level security, ensuring tenants cannot access other users' requests.
+We expanded the Django test suite into five focused test classes:  
+- `RepairRequestModelTests` — Model behaviour  
+- `RepairRequestQuerySetTests` — Custom QuerySet logic  
+- `RepairRequestServiceTests` — Service layer including auth errors  
+- `PermissionServiceTests` — Authorization rules  
+- `RepairRequestViewPermissionTests` — HTTP-level access control
 
 **Code reference**  
-- `proj_1/housing/tests.py:11–364` — The complete test suite.
+- `proj_1/housing/tests.py:11–502` — Complete test suite
 
 **Consequences**  
-- **Pros:** High confidence in the correctness of each layer independently; security rules (ADR 19) are verified automatically; regressions are caught before deployment.
-- **Cons:** Tests must be maintained when models or services change; slightly increases development time per feature.
+**Pros:** High confidence per layer; security rules verified automatically.  
+**Cons:** Tests must be maintained when models or services change.
 
 ---
 
-### ADR 23 : Custom Authentication Flow with Auto-Login on Registration
+### ADR 24 : Custom Authentication Flow with Auto-Login on Registration
 
 **Status:** Accepted
 
 **Context**  
-The original application relied on the Django admin login page for user authentication, which was unsuitable for regular tenants who are not staff and should not access the admin panel. A user-friendly login and registration experience was needed for the public-facing application.
+The application needed a user-friendly login and registration experience for tenants, not the Django admin login page.
 
 **Alternatives considered**  
-- **Django Admin Login for All Users**: Simple to implement but exposes the admin interface URL to non-staff users and provides a poor user experience.
-- **Third-party packages (django-allauth)**: Feature-rich but adds unnecessary complexity and dependencies for the current scope.
+- **Django admin login for all users**: Poor UX and exposes admin URL to non-staff.  
+- **Third-party packages (django-allauth)**: Unnecessary complexity for current scope.
 
 **Decision**  
-We implemented a custom `UserLoginView` (extending Django's built-in `LoginView`) with a dedicated template and a `RegisterView` (extending `CreateView`) that automatically logs the user in upon successful registration using Django's `login()` function.
+We implemented `UserLoginView` (extending `LoginView`) and `RegisterView` (extending `CreateView`) with dedicated templates. Registration auto-logs in the user via `login()` and redirects to the dashboard. Logout uses `LogoutView` with `next_page="login"`.
 
 **Code reference**  
-- `proj_1/housing/views.py:33–48` — `RegisterView` and `UserLoginView` implementations.
-- `proj_1/housing/templates/housing/login.html` — Custom login template.
-- `proj_1/housing/urls.py:21–25` — URL route for the login view.
+- `proj_1/housing/views.py:35–50` — `RegisterView`, `UserLoginView`  
+- `proj_1/housing/templates/housing/login.html`, `register.html`  
+- `proj_1/housing/urls.py:20–30`, `74–78` — Login, logout, register routes
 
 **Consequences**  
-- **Pros:** Seamless user experience; tenants are redirected to the dashboard immediately after registering; no exposure of the admin panel to regular users.
-- **Cons:** Requires maintaining custom templates and views alongside Django's built-in auth system.
-
-
+**Pros:** Seamless tenant UX; no admin exposure for regular users.  
+**Cons:** Custom templates and views must be maintained alongside Django auth.
 
 ---
 
-### ADR 24 : Custom User Registration Form via UserCreationForm Extension
+### ADR 25 : Custom User Registration Form via UserCreationForm Extension
 
 **Status:** Accepted
 
 **Context**  
-Django's default `UserCreationForm` only includes username and password fields. The application needed to optionally collect an email address during registration while still leveraging Django's built-in password validation and user creation logic.
+Django's default `UserCreationForm` only includes username and password fields. The application needed to optionally collect an email address while reusing Django's secure password validation.
 
 **Alternatives considered**  
-- **Default `UserCreationForm`**: No email field — insufficient for future contact functionality.
-- **Manual `forms.Form`**: Requires re-implementing password hashing and validation from scratch, which is error-prone and a security risk.
+- **Default `UserCreationForm`**: No email field.  
+- **Manual `forms.Form`**: Error-prone and a security risk for passwords.
 
 **Decision**  
-We extended Django's `UserCreationForm` to create `UserRegisterForm`, adding an optional `email` field. This approach reuses all of Django's secure password handling while allowing the form to be customised.
+We extended `UserCreationForm` to create `UserRegisterForm` with an optional `email` field.
 
 **Code reference**  
-- `proj_1/housing/forms.py:27–39` — `UserRegisterForm` definition.
-- `proj_1/housing/views.py:33–41` — `RegisterView` using the custom form.
+- `proj_1/housing/forms.py:53–63` — `UserRegisterForm`  
+- `proj_1/housing/views.py:35–43` — `RegisterView` using the custom form
 
 **Consequences**  
-- **Pros:** Inherits all of Django's built-in password validation and security; minimal extra code; easily extensible with additional fields in the future.
-- **Cons:** Any future changes to Django's `UserCreationForm` API may require corresponding updates to this subclass.
+**Pros:** Inherits Django password validation; minimal extra code.  
+**Cons:** Future Django `UserCreationForm` API changes may require updates.
 
 ---
 
-### ADR 25 : Shared Base Template for Consistent UI Layout
+### ADR 26 : Shared Base Template for Consistent UI Layout
 
 **Status:** Accepted
 
 **Context**  
-As the number of templates grew (home, list, detail, dashboard, etc.), maintaining a consistent navigation bar and page structure across all pages became repetitive and error-prone. Any change to the navigation required updating every individual template file.
+As templates grew (home, list, detail, dashboard, forms, FAQ, etc.), maintaining a consistent navigation bar and page structure in every file was repetitive and error-prone.
 
 **Alternatives considered**  
-- **Copying HTML across each template**: Fast initially but violates DRY and makes global changes (like adding a nav item) extremely tedious.
-- **JavaScript-rendered navigation (SPA approach)**: Overkill for this project's server-side rendering architecture (ADR 4).
+- **Copying HTML across templates**: Violates DRY.  
+- **JavaScript-rendered navigation**: Overkill for server-side rendering (ADR 4).
 
 **Decision**  
-We implemented a `base.html` template containing the shared site header, navigation bar, and page structure. All other templates extend this base using Django's `{% extends %}` and `{% block content %}` tags, ensuring a consistent look and feel across the entire application.
+We implemented `base.html` with shared header, navigation, footer, and `{% block content %}`. All application templates extend it via `{% extends "housing/base.html" %}` including repair and maintenance forms (previously standalone HTML pages).
 
 **Code reference**  
-- `proj_1/housing/templates/housing/base.html:1–88` — The shared base template with navigation.
-- All other templates (e.g., `repair_request_list.html`, `dashboard.html`) — Use `{% extends "housing/base.html" %}`.
+- `proj_1/housing/templates/housing/base.html` — Shared layout and navigation  
+- All templates under `proj_1/housing/templates/housing/` — Extend the base template
 
 **Consequences**  
-- **Pros:** A single change to `base.html` updates the navigation across the entire site; consistent branding and layout; follows Django's DRY template philosophy.
-- **Cons:** All templates are tightly coupled to `base.html`; a structural change to the base (e.g., major redesign) may require updating child template block content.
+**Pros:** One change updates navigation site-wide; consistent branding.  
+**Cons:** Structural base changes may require updating child template blocks.
 
+---
 
+### ADR 27 : Centralised Static CSS for Consistent Visual Design
 
+**Status:** Accepted
 
+**Context**  
+After introducing `base.html` (ADR 26), styling was initially inline or duplicated per template (e.g. maintenance history). That produced an inconsistent look and made global design changes difficult.
 
+**Alternatives considered**  
+- **Inline styles per template**: Fast initially but inconsistent and hard to maintain.  
+- **Third-party CSS frameworks (Bootstrap, Tailwind)**: Extra dependency and build steps beyond project scope.  
+- **Copy-pasted `<style>` blocks**: Duplicated rules across pages.
 
+**Decision**  
+We added a single stylesheet at `housing/static/housing/css/main.css` loaded from `base.html` via `{% load static %}`. Shared CSS classes cover layout (`.container`, `.page-card`), forms (`.form-card`), buttons (`.btn`), tables (`.data-table`), lists (`.request-list`), dashboard stats (`.stats-grid`), and status badges (`.badge`).
 
+**Code reference**  
+- `proj_1/housing/static/housing/css/main.css` — Shared design system  
+- `proj_1/housing/templates/housing/base.html:1–9` — Static file inclusion  
+- `proj_1/proj_1/settings.py` — `STATIC_URL` and `django.contrib.staticfiles`
+
+**Consequences**  
+**Pros:** Consistent UI across all pages; one place to update colours, spacing, and components; no build toolchain required.  
+**Cons:** Custom CSS must be maintained manually; no component library out of the box.
+
+---
+
+This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. Decisions were revisited and refined as the project evolved from basic CRUD through services, permissions, testing, authentication, and UI consistency.
