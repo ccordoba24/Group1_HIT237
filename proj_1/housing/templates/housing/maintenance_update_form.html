@@ -1,22 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Maintenance Update</title>
-</head>
-<body>
-    <h1>Add Maintenance Update</h1>
+{% extends "housing/base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
+{% block title %}Add Maintenance Update — NT Housing Maintenance{% endblock %}
 
-        <button type="submit">Save Update</button>
-    </form>
+{% block content %}
+<div class="container container--narrow">
+    <div class="page-card form-card">
+        <h1>Add Maintenance Update</h1>
+        <p class="page-intro">Record progress or notes for this repair request.</p>
 
-    <p>
-        <a href="{% url 'repair-request-detail' view.kwargs.pk %}">
-            Back to Repair Request
-        </a>
-    </p>
-</body>
-</html>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Save Update</button>
+                <a href="{% url 'repair-request-detail' view.kwargs.pk %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

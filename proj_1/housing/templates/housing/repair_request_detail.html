@@ -1,50 +1,62 @@
 {% extends "housing/base.html" %}
 
+{% block title %}{{ request.title }} — NT Housing Maintenance{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1>{{ request.title }}</h1>
+    <div class="page-card">
+        <div class="page-header">
+            <h1>{{ request.title }}</h1>
+            <span class="badge badge-{{ request.status }}">{{ request.status }}</span>
+        </div>
 
-    <p><strong>Description:</strong> {{ request.description }}</p>
-    <p><strong>Status:</strong> {{ request.status }}</p>
-    <p><strong>Category:</strong> {{ request.category }}</p>
-    <p><strong>Dwelling:</strong> {{ request.dwelling }}</p>
-    <p><strong>Tenant:</strong> {{ request.tenant }}</p>
-    <p><strong>Created at:</strong> {{ request.created_at }}</p>
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">Description</span>
+                <span>{{ request.description }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Category</span>
+                <span>{{ request.category }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Dwelling</span>
+                <span>{{ request.dwelling }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Tenant</span>
+                <span>{{ request.tenant }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Created</span>
+                <span>{{ request.created_at }}</span>
+            </div>
+        </div>
 
-    <p>
-        <a href="{% url 'repair-request-update' request.pk %}">
-            Edit Repair Request
-        </a>
-    </p>
+        <div class="actions">
+            <a href="{% url 'repair-request-update' request.pk %}" class="btn btn-primary">Edit Request</a>
+            {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'maintenance-update-create' request.pk %}" class="btn btn-success">Add Update</a>
+            {% endif %}
+            <a href="{% url 'repair-request-list' %}" class="btn btn-outline">Back to List</a>
+        </div>
 
-    {% if user.is_staff or user.is_superuser %}
-        <p>
-            <a href="{% url 'maintenance-update-create' request.pk %}">
-                Add Maintenance Update
-            </a>
-        </p>
-    {% endif %}
+        <h2>Maintenance Updates</h2>
 
-    <h2>Maintenance Updates</h2>
-
-    {% if request.updates.all %}
-        <ul>
-            {% for update in request.updates.all %}
-                <li>
-                    <strong>{{ update.updated_at }}</strong>
-                    <br>
-                    {{ update }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No maintenance updates yet.</p>
-    {% endif %}
-
-    <p>
-        <a href="{% url 'repair-request-list' %}">
-            Back to Repair Requests
-        </a>
-    </p>
+        {% if request.updates.all %}
+            <ul class="update-list">
+                {% for update in request.updates.all %}
+                    <li class="update-item">
+                        <strong>{{ update.updated_at }}</strong>
+                        {{ update }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>No maintenance updates yet.</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

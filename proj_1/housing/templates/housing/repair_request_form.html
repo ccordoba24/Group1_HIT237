@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>New Repair Request</title>
-</head>
-<body>
-    <h1>Create Repair Request</h1>
+{% extends "housing/base.html" %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
+{% block title %}
+    {% if object %}Edit Repair Request{% else %}New Repair Request{% endif %} — NT Housing Maintenance
+{% endblock %}
 
-    <p><a href="{% url 'repair-request-list' %}">Back to Repair Requests</a></p>
-</body>
-</html>
+{% block content %}
+<div class="container container--narrow">
+    <div class="page-card form-card">
+        <h1>{% if object %}Edit Repair Request{% else %}Create Repair Request{% endif %}</h1>
+        <p class="page-intro">Fill in the details below and submit your request.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a href="{% url 'repair-request-list' %}" class="btn btn-outline">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

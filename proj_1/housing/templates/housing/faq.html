@@ -1,27 +1,35 @@
 {% extends "housing/base.html" %}
 
+{% block title %}FAQ — NT Housing Maintenance{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1>Frequently Asked Questions</h1>
+    <div class="page-card">
+        <h1>Frequently Asked Questions</h1>
+        <p class="page-intro">
+            Common questions and answers about the NT Housing Maintenance System for tenants
+            and staff in Northern Territory remote communities.
+        </p>
 
-    <p>
-        Below are common questions and answers about the NT Housing Maintenance System. This system is designed to help tenants in Northern Territory remote communities report housing repair issues and allows staff or admin users to track, update, and manage those requests efficiently.
-    </p>
+        <div class="content-section">
+            <h2>General Information</h2>
 
-    <!-- General Information -->
-    <h2>General Information</h2>
-
-    <h3>What is this system used for?</h3>
+            <div class="faq-item">
+                <h3>What is this system used for?</h3>
     <p>
         This system helps tenants report housing repair and maintenance issues and allows NT Housing staff and admin users to track, update, and manage those requests in one place. It provides transparency and efficiency in managing repairs across remote communities in the Northern Territory.
     </p>
+            </div>
 
-    <h3>Who can submit a repair request?</h3>
+            <div class="faq-item">
+                <h3>Who can submit a repair request?</h3>
     <p>
         Any logged-in tenant can submit repair requests for housing issues in their dwelling. Registered users must have a valid NT Housing tenant account. If you don't have an account, please contact your local community housing office or register through this system.
     </p>
+            </div>
 
-    <h3>What types of repairs can I report?</h3>
+            <div class="faq-item">
+                <h3>What types of repairs can I report?</h3>
     <p>
         You can report a wide range of maintenance and repair issues including:
         <ul>
@@ -36,16 +44,21 @@
             <li>General maintenance (painting, caulking, weatherproofing)</li>
         </ul>
     </p>
+            </div>
+        </div>
 
-    <!-- Repair Request Process -->
-    <h2>Making a Repair Request</h2>
+        <div class="content-section">
+            <h2>Making a Repair Request</h2>
 
-    <h3>How do I submit a repair request?</h3>
+            <div class="faq-item">
+                <h3>How do I submit a repair request?</h3>
     <p>
         Log in to the system, click on "Repair Requests" in the dashboard, then select "New Request". Fill in the details about your repair issue, select the category that best describes your problem, and submit. You will receive a confirmation and can track the status of your request at any time.
     </p>
+            </div>
 
-    <h3>What information do I need to provide when making a request?</h3>
+            <div class="faq-item">
+                <h3>What information do I need to provide when making a request?</h3>
     <p>
         Please provide the following information to help staff respond quickly:
         <ul>
@@ -57,21 +70,28 @@
             <li>Any urgent safety concerns</li>
         </ul>
     </p>
+            </div>
 
-    <h3>Can I submit an emergency repair request?</h3>
+            <div class="faq-item">
+                <h3>Can I submit an emergency repair request?</h3>
     <p>
         Yes. If you have an urgent safety issue (such as no water, no electricity, security breach, or safety hazard), submit your request immediately and mark it as urgent. For life-threatening emergencies, call emergency services first (000) before submitting a request. NT Housing staff will prioritize urgent repairs and respond as quickly as possible.
     </p>
+            </div>
+        </div>
 
-    <!-- Tracking and Updates -->
-    <h2>Tracking Your Request</h2>
+        <div class="content-section">
+            <h2>Tracking Your Request</h2>
 
-    <h3>Can tenants see the progress of their repair request?</h3>
+            <div class="faq-item">
+                <h3>Can tenants see the progress of their repair request?</h3>
     <p>
         Yes. You can view the current status of your repair requests at any time by logging into your account and going to the "Repair Requests" section. Status categories include: Pending, In Progress, Completed, and On Hold.
     </p>
+            </div>
 
-    <h3>What do different repair statuses mean?</h3>
+            <div class="faq-item">
+                <h3>What do different repair statuses mean?</h3>
     <p>
         <ul>
             <li><strong>Pending:</strong> Your request has been received and is waiting to be assigned to a tradesperson.</li>
@@ -80,13 +100,17 @@
             <li><strong>Completed:</strong> The repair has been finished and the issue should be resolved.</li>
         </ul>
     </p>
+            </div>
 
-    <h3>Can I receive updates about my repair?</h3>
+            <div class="faq-item">
+                <h3>Can I receive updates about my repair?</h3>
     <p>
         Yes. You can check your repair status anytime through the system. Staff may also add maintenance updates with progress notes. You can view the full history of updates and maintenance work on your repair detail page.
     </p>
+            </div>
 
-    <h3>How long will my repair take?</h3>
+            <div class="faq-item">
+                <h3>How long will my repair take?</h3>
     <p>
         Repair timelines vary depending on several factors:
         <ul>
@@ -97,11 +121,14 @@
         </ul>
         In remote NT communities, repair times may be longer due to travel distance and parts availability. Staff will update you if delays are expected.
     </p>
+            </div>
+        </div>
 
-    <!-- Tenant Responsibilities -->
-    <h2>Tenant Rights and Responsibilities</h2>
+        <div class="content-section">
+            <h2>Tenant Rights and Responsibilities</h2>
 
-    <h3>Can tenants edit their repair request?</h3>
+            <div class="faq-item">
+                <h3>Can tenants edit their repair request?</h3>
     <p>
         Yes. You can edit basic details of your request (such as description and category) until a tradesperson has been assigned. Once work has started, you cannot change the request details through the system. Please contact NT Housing staff directly if you need to make changes to an in-progress repair.
     </p>
@@ -222,5 +249,6 @@
         Our team is available to provide assistance with the system and your repairs.
     </p>
 
+    </div>
 </div>
 {% endblock %}

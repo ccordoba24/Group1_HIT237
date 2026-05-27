@@ -1,33 +1,51 @@
 {% extends "housing/base.html" %}
 
+{% block title %}Dashboard — NT Housing Maintenance{% endblock %}
+
 {% block content %}
 <div class="container">
+    <div class="page-card">
+        <div class="page-header">
+            <h1>Housing Maintenance Dashboard</h1>
+            <a href="{% url 'repair-request-list' %}" class="btn btn-primary">View Requests</a>
+        </div>
 
-    <h1>Housing Maintenance Dashboard</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">{{ total_requests }}</span>
+                <span class="stat-label">Total Requests</span>
+            </div>
+            <div class="stat-card stat-card--open">
+                <span class="stat-value">{{ open_requests }}</span>
+                <span class="stat-label">Open Requests</span>
+            </div>
+            <div class="stat-card stat-card--done">
+                <span class="stat-value">{{ completed_requests }}</span>
+                <span class="stat-label">Completed</span>
+            </div>
+        </div>
 
-    <p><strong>Total Requests:</strong> {{ total_requests }}</p>
+        <h2>Requests by Status</h2>
 
-    <p><strong>Open Requests:</strong> {{ open_requests }}</p>
+        {% if requests_by_status %}
+            <ul class="status-list">
+                {% for item in requests_by_status %}
+                    <li>
+                        <span>{{ item.status }}</span>
+                        <strong>{{ item.total }}</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>No request data available yet.</p>
+            </div>
+        {% endif %}
 
-    <p><strong>Completed Requests:</strong> {{ completed_requests }}</p>
-
-    <h2>Requests by Status</h2>
-
-    {% if requests_by_status %}
-        <ul>
-            {% for item in requests_by_status %}
-                <li>{{ item.status }}: {{ item.total }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No request data available.</p>
-    {% endif %}
-
-    <p>
-        <a href="{% url 'repair-request-list' %}">
-            Back to Repair Requests
-        </a>
-    </p>
-
+        <div class="actions">
+            <a href="{% url 'repair-request-create' %}" class="btn btn-success">New Repair Request</a>
+            <a href="{% url 'maintenance-history' %}" class="btn btn-outline">Maintenance History</a>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,40 +1,40 @@
 {% extends "housing/base.html" %}
 
 {% block content %}
-    <div class="container">
-        <h2>Welcome</h2>
-        <p>Use the options below to submit a repair request or view maintenance history.</p>
+<div class="container">
+    <div class="page-card">
+        <h1>Welcome</h1>
+        <p class="page-intro">Use the options below to submit a repair request, view maintenance history, or find help.</p>
 
-        <div class="card-grid" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap">
-
-            <div class="card" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #3498db">
-                <div class="card-icon">🔧</div>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">&#128295;</div>
                 <h3>Repair Requests</h3>
                 <p>View, create, or update repair requests.</p>
                 <a href="{% url 'repair-request-list' %}" class="card-btn">Go to Requests</a>
             </div>
 
-            <div class="card green" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #639922">
-                <div class="card-icon">📋</div>
+            <div class="card card--green">
+                <div class="card-icon">&#128203;</div>
                 <h3>Maintenance History</h3>
                 <p>See all completed repairs and past fixes.</p>
                 <a href="{% url 'maintenance-history' %}" class="card-btn">View History</a>
             </div>
 
-            <div class="card" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #e74c3c">
-                <div class="card-icon">❓</div>
+            <div class="card card--red">
+                <div class="card-icon">&#10067;</div>
                 <h3>FAQ</h3>
                 <p>Find answers to frequently asked questions.</p>
                 <a href="{% url 'faq' %}" class="card-btn">View FAQ</a>
             </div>
 
-            <div class="card" style="background:#fff;border-radius:10px;padding:30px 24px;width:260px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-top:4px solid #9b59b6">
-                <div class="card-icon">ℹ️</div>
+            <div class="card card--purple">
+                <div class="card-icon">&#8505;</div>
                 <h3>About</h3>
                 <p>Learn more about the system.</p>
                 <a href="{% url 'about' %}" class="card-btn">About</a>
             </div>
-
         </div>
     </div>
+</div>
 {% endblock %}

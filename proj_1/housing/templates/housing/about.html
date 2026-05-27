@@ -1,34 +1,46 @@
 {% extends "housing/base.html" %}
 
+{% block title %}About — NT Housing Maintenance{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <h2>About the NT Housing Maintenance System</h2>
-        
-        <h3>What is this system?</h3>
-        <p>
-            The NT Housing Maintenance System is a digital platform designed to help tenants in Northern Territory remote communities report housing repair and maintenance issues, and to allow NT Housing staff and authorized administrators to track, update, and manage those requests efficiently in one place.
+<div class="container">
+    <div class="page-card">
+        <h1>About the NT Housing Maintenance System</h1>
+        <p class="page-intro">
+            A digital platform for tenants in Northern Territory remote communities to report housing repairs,
+            and for NT Housing staff to track and manage those requests.
         </p>
 
-        <h3>Our Purpose</h3>
-        <p>
-            This system provides transparency and efficiency in managing repairs across remote communities in the Northern Territory. It enables:
+        <div class="content-section">
+            <h2>What is this system?</h2>
+            <p>
+                The NT Housing Maintenance System helps tenants report housing repair and maintenance issues and allows
+                NT Housing staff and administrators to track, update, and manage those requests in one place.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>Our Purpose</h2>
+            <p>This system provides transparency and efficiency in managing repairs across remote communities. It enables:</p>
             <ul>
-                <li><strong>Easy reporting:</strong> Tenants can log repair requests quickly and easily from any location</li>
+                <li><strong>Easy reporting:</strong> Tenants can log repair requests quickly from any location</li>
                 <li><strong>Real-time tracking:</strong> Tenants can see the progress of their repairs at any time</li>
                 <li><strong>Better coordination:</strong> Staff can manage requests and schedule repairs more effectively</li>
                 <li><strong>Complete documentation:</strong> A full maintenance history is maintained for each dwelling</li>
                 <li><strong>Improved response:</strong> Priority repairs are identified and handled faster</li>
             </ul>
-        </p>
+        </div>
 
-        <h3>Who We Serve</h3>
-        <p>
-            This system is for NT Housing tenants living in remote communities throughout the Northern Territory. Whether you need urgent repairs due to a safety issue or routine maintenance like plumbing, electrical, air conditioning, or general upkeep, this system provides a simple way to request help.
-        </p>
+        <div class="content-section">
+            <h2>Who We Serve</h2>
+            <p>
+                This system is for NT Housing tenants living in remote communities throughout the Northern Territory.
+                Whether you need urgent repairs or routine maintenance, this system provides a simple way to request help.
+            </p>
+        </div>
 
-        <h3>What You Can Do</h3>
-        <p>
-            Through this system, you can:
+        <div class="content-section">
+            <h2>What You Can Do</h2>
             <ul>
                 <li>Submit repair requests for housing maintenance issues</li>
                 <li>Track the status of your repairs in real-time</li>
@@ -37,45 +49,49 @@
                 <li>Access information about repair timelines and processes</li>
                 <li>Report emergency issues immediately</li>
             </ul>
-        </p>
+        </div>
 
-        <h3>Key Features</h3>
-        <p>
+        <div class="content-section">
+            <h2>Key Features</h2>
             <ul>
-                <li><strong>Repair Requests:</strong> Submit new repair requests and track their status through each stage (Pending, In Progress, On Hold, Completed)</li>
-                <li><strong>Maintenance History:</strong> View all completed repairs and maintenance work on your dwelling</li>
-                <li><strong>Status Updates:</strong> Receive detailed updates as tradespeople work on your repairs</li>
-                <li><strong>Priority Handling:</strong> Emergency and urgent repairs are prioritized for faster response</li>
-                <li><strong>Secure Access:</strong> Your housing information is protected with secure login credentials</li>
+                <li><strong>Repair Requests:</strong> Submit and track requests through each stage</li>
+                <li><strong>Maintenance History:</strong> View all completed repairs for your dwelling</li>
+                <li><strong>Status Updates:</strong> Receive detailed updates as work progresses</li>
+                <li><strong>Priority Handling:</strong> Emergency repairs are prioritized</li>
+                <li><strong>Secure Access:</strong> Your housing information is protected with secure login</li>
             </ul>
-        </p>
+        </div>
 
-        <h3>Designed for Remote Communities</h3>
-        <p>
-            The NT Housing Maintenance System is specifically designed to work effectively in remote Northern Territory communities. We understand the unique challenges of remote living, including:
+        <div class="content-section">
+            <h2>Designed for Remote Communities</h2>
+            <p>Built to work effectively in remote Northern Territory communities, including:</p>
             <ul>
                 <li>Limited availability of local tradespeople</li>
                 <li>Varying internet connectivity</li>
                 <li>Greater distances between communities</li>
                 <li>Weather and seasonal impacts on repairs</li>
             </ul>
-            Our system is built to handle these challenges and ensure that tenants in remote areas receive the maintenance support they need.
-        </p>
+        </div>
 
-        <h3>No Cost to Tenants</h3>
-        <p>
-            Repairs covered by NT Housing tenancy agreements are provided at no cost to you. This system tracks maintenance requests and work—no payment or billing occurs through this app. Repairs required due to normal wear and tear are the responsibility of NT Housing.
-        </p>
+        <div class="content-section">
+            <h2>No Cost to Tenants</h2>
+            <p>
+                Repairs covered by NT Housing tenancy agreements are provided at no cost to you.
+                Payment and billing are not managed through this app.
+            </p>
+        </div>
 
-        <h3>Questions?</h3>
-        <p>
-            For more information, visit our <a href="{% url 'faq' %}">Frequently Asked Questions</a> page or contact NT Housing:
+        <div class="content-section">
+            <h2>Questions?</h2>
+            <p>
+                Visit our <a href="{% url 'faq' %}">Frequently Asked Questions</a> page or contact NT Housing:
+            </p>
             <ul>
                 <li><strong>General Enquiries:</strong> 08 8900 000A</li>
                 <li><strong>Housing Repairs and Maintenance:</strong> 1800 100 10A</li>
                 <li><strong>Housing Complaints Line:</strong> 1800 100 10B</li>
             </ul>
-            Our team is available to provide assistance with the system and your repairs.
-        </p>
+        </div>
     </div>
+</div>
 {% endblock %}

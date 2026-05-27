@@ -1,18 +1,23 @@
 {% extends "housing/base.html" %}
 
+{% block title %}Register — NT Housing Maintenance{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <h2>Create an account</h2>
+<div class="container container--narrow">
+    <div class="page-card form-card">
+        <h1>Create an account</h1>
+        <p class="page-intro">Register to submit and track housing repair requests.</p>
 
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-
-            <button type="submit">Register</button>
+            <button type="submit" class="btn btn-primary">Register</button>
         </form>
 
-        <p>
+        <p class="form-footer">
+            Already have an account? <a href="{% url 'login' %}">Login</a>.
             After registration, you will be redirected to the dashboard.
         </p>
     </div>
+</div>
 {% endblock %}

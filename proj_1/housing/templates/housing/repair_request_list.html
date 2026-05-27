@@ -1,37 +1,36 @@
 {% extends "housing/base.html" %}
 
+{% block title %}Repair Requests — NT Housing Maintenance{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h1>Repair Requests</h1>
+    <div class="page-card">
+        <div class="page-header">
+            <h1>Repair Requests</h1>
+            <a href="{% url 'repair-request-create' %}" class="btn btn-success">Create New Request</a>
+        </div>
 
-    <p>
-        <a href="{% url 'repair-request-create' %}">
-            Create New Repair Request
-        </a>
-    </p>
-
-    {% if requests %}
-        <h2>Request List</h2>
-
-        <ul>
-            {% for request in requests %}
-                <li>
-                    <a href="{% url 'repair-request-detail' request.pk %}">
-                        <strong>{{ request.title }}</strong>
-                    </a>
-
-                    <br>
-                    Status: {{ request.status }}
-                    <br>
-                    Dwelling: {{ request.dwelling.address }}
-                    <br>
-                    Maintenance updates: {{ request.update_count }}
-                </li>
-                <br>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No repair requests found.</p>
-    {% endif %}
+        {% if requests %}
+            <ul class="request-list">
+                {% for request in requests %}
+                    <li class="request-item">
+                        <a href="{% url 'repair-request-detail' request.pk %}" class="title-link">
+                            {{ request.title }}
+                        </a>
+                        <div class="request-meta">
+                            <span>Status: <span class="badge badge-{{ request.status }}">{{ request.status }}</span></span>
+                            <span>Dwelling: {{ request.dwelling.address }}</span>
+                            <span>Updates: {{ request.update_count }}</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <p>No repair requests found.</p>
+                <p><a href="{% url 'repair-request-create' %}" class="btn btn-primary">Create your first request</a></p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

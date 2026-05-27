@@ -1,81 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>NT Housing Maintenance System</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-        }
-
-        .header {
-            background: #2c3e50;
-            color: #fff;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-        }
-
-        .brand {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .header-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .nav {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .nav a {
-            color: #fff;
-            text-decoration: none;
-            padding: 6px 8px;
-        }
-
-        .nav span {
-            color: #fff;
-            padding: 6px 8px;
-        }
-
-        .logout-form {
-            display: inline;
-            margin: 0;
-        }
-
-        .logout-button {
-            background: none;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            font: inherit;
-            padding: 6px 8px;
-        }
-
-        .logout-button:hover,
-        .nav a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}NT Housing Maintenance System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'housing/css/main.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
-
 <body>
     <header class="header">
         <div class="header-inner">
@@ -85,17 +17,15 @@
                 <a href="{% url 'home' %}">Home</a>
                 <a href="{% url 'dashboard' %}">Dashboard</a>
                 <a href="{% url 'repair-request-list' %}">Requests</a>
+                <a href="{% url 'maintenance-history' %}">History</a>
                 <a href="{% url 'faq' %}">FAQ</a>
                 <a href="{% url 'about' %}">About</a>
 
                 {% if user.is_authenticated %}
-                    <span>Logged in as {{ user.username }}</span>
-
+                    <span class="user-label">{{ user.username }}</span>
                     <form method="post" action="{% url 'logout' %}" class="logout-form">
                         {% csrf_token %}
-                        <button type="submit" class="logout-button">
-                            Logout
-                        </button>
+                        <button type="submit" class="logout-button">Logout</button>
                     </form>
                 {% else %}
                     <a href="{% url 'register' %}">Register</a>
@@ -109,5 +39,10 @@
         {% block content %}{% endblock %}
     </main>
 
+    <footer class="site-footer">
+        NT Housing Maintenance System &mdash;
+        <a href="{% url 'faq' %}">Help</a> &middot;
+        <a href="{% url 'about' %}">About</a>
+    </footer>
 </body>
 </html>

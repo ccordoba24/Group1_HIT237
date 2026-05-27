@@ -1,18 +1,22 @@
 {% extends "housing/base.html" %}
 
+{% block title %}Login — NT Housing Maintenance{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container container--narrow">
+    <div class="page-card form-card">
+        <h1>Login</h1>
+        <p class="page-intro">Sign in to manage your repair requests.</p>
 
-    <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <button type="submit">
-            Login
-        </button>
-    </form>
-
+        <p class="form-footer">
+            Don't have an account? <a href="{% url 'register' %}">Register here</a>.
+        </p>
+    </div>
 </div>
 {% endblock %}
