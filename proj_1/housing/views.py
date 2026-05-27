@@ -1,6 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponseForbidden
 from django.views.generic import (
     ListView,
@@ -15,7 +15,9 @@ from django.urls import reverse_lazy
 
 from .models import RepairRequest, MaintenanceUpdate
 from .forms import (
-    RepairRequestForm,
+    RepairRequestCreateForm,
+    RepairRequestUserUpdateForm,
+    RepairRequestStaffUpdateForm,
     MaintenanceUpdateForm,
     UserRegisterForm,
 )
@@ -64,8 +66,9 @@ class RepairRequestAccessMixin:
             return RepairRequest.objects.all()
 
         return RepairRequest.objects.filter(
-            created_by=self.request.user
-        )
+            Q(created_by=self.request.user) |
+            Q(tenant__user=self.request.user)
+        ).distinct()
 
 
 # --- Dashboard ---
@@ -139,7 +142,7 @@ class RepairRequestDetailView(LoginRequiredMixin, RepairRequestAccessMixin, Deta
 
 class RepairRequestCreateView(LoginRequiredMixin, CreateView):
     model = RepairRequest
-    form_class = RepairRequestForm
+    form_class = RepairRequestCreateForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
     login_url = "/login/"
@@ -156,13 +159,18 @@ class RepairRequestCreateView(LoginRequiredMixin, CreateView):
 
 class RepairRequestUpdateView(LoginRequiredMixin, RepairRequestAccessMixin, UpdateView):
     model = RepairRequest
-    form_class = RepairRequestForm
     template_name = "housing/repair_request_form.html"
     success_url = reverse_lazy("repair-request-list")
     login_url = "/login/"
 
     def get_queryset(self):
         return self.get_accessible_requests()
+
+    def get_form_class(self):
+        if PermissionService.is_staff_or_superuser(self.request.user):
+            return RepairRequestStaffUpdateForm
+
+        return RepairRequestUserUpdateForm
 
     def form_valid(self, form):
         self.object = RepairRequestService.update_repair_request(

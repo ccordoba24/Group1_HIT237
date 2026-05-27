@@ -5,7 +5,31 @@ from django.contrib.auth.models import User
 from .models import RepairRequest, MaintenanceUpdate
 
 
-class RepairRequestForm(forms.ModelForm):
+class RepairRequestCreateForm(forms.ModelForm):
+    class Meta:
+        model = RepairRequest
+        fields = [
+            "title",
+            "description",
+            "category",
+            "dwelling",
+            "tenant",
+        ]
+
+
+class RepairRequestUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = RepairRequest
+        fields = [
+            "title",
+            "description",
+            "category",
+            "dwelling",
+            "tenant",
+        ]
+
+
+class RepairRequestStaffUpdateForm(forms.ModelForm):
     class Meta:
         model = RepairRequest
         fields = [
@@ -21,13 +45,13 @@ class RepairRequestForm(forms.ModelForm):
 class MaintenanceUpdateForm(forms.ModelForm):
     class Meta:
         model = MaintenanceUpdate
-        fields = ["note"]
+        exclude = [
+            "repair_request",
+        ]
 
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField(
-        required=False
-    )
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = User
@@ -37,3 +61,8 @@ class UserRegisterForm(UserCreationForm):
             "password1",
             "password2",
         ]
+
+
+# Backward-compatible aliases for existing tests and older code references.
+RepairRequestForm = RepairRequestStaffUpdateForm
+RepairRequestUpdateForm = RepairRequestStaffUpdateForm

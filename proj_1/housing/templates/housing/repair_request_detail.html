@@ -2,36 +2,49 @@
 
 {% block content %}
 <div class="container">
-    <h1>Repair Requests</h1>
+    <h1>{{ request.title }}</h1>
+
+    <p><strong>Description:</strong> {{ request.description }}</p>
+    <p><strong>Status:</strong> {{ request.status }}</p>
+    <p><strong>Category:</strong> {{ request.category }}</p>
+    <p><strong>Dwelling:</strong> {{ request.dwelling }}</p>
+    <p><strong>Tenant:</strong> {{ request.tenant }}</p>
+    <p><strong>Created at:</strong> {{ request.created_at }}</p>
 
     <p>
-        <a href="{% url 'repair-request-create' %}">
-            Create New Repair Request
+        <a href="{% url 'repair-request-update' request.pk %}">
+            Edit Repair Request
         </a>
     </p>
 
-    {% if requests %}
-        <h2>Request List</h2>
+    {% if user.is_staff or user.is_superuser %}
+        <p>
+            <a href="{% url 'maintenance-update-create' request.pk %}">
+                Add Maintenance Update
+            </a>
+        </p>
+    {% endif %}
 
+    <h2>Maintenance Updates</h2>
+
+    {% if request.updates.all %}
         <ul>
-            {% for request in requests %}
+            {% for update in request.updates.all %}
                 <li>
-                    <a href="{% url 'repair-request-detail' request.pk %}">
-                        <strong>{{ request.title }}</strong>
-                    </a>
-
+                    <strong>{{ update.updated_at }}</strong>
                     <br>
-                    Status: {{ request.status }}
-                    <br>
-                    Dwelling: {{ request.dwelling.address }}
-                    <br>
-                    Maintenance updates: {{ request.update_count }}
+                    {{ update }}
                 </li>
-                <br>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No repair requests found.</p>
+        <p>No maintenance updates yet.</p>
     {% endif %}
+
+    <p>
+        <a href="{% url 'repair-request-list' %}">
+            Back to Repair Requests
+        </a>
+    </p>
 </div>
 {% endblock %}
