@@ -448,6 +448,29 @@ We introduced a **Service Layer (`services.py`)** to encapsulate business operat
 
 **Consequences**  
 - **Pros:** Clearer separation of concerns; business logic can be unit-tested without HTTP request mocks; centralized permission management.  
+- **Cons:** Additional indirection layer adds complexity; service classes must be kept minimal and focused.
+
+---
+
+### ADR 17 : Create Dedicated `extras` App for Static Information Pages
+
+**Status:** Accepted
+
+**Context**  
+FAQ and About pages were initially part of the housing app but logically represent static information pages separate from core housing repair functionality. That violated single responsibility so changes were made.
+
+**Decision**  
+Created a new `housing.extras` sub-app containing `FAQView` and `AboutView`. Templates moved to shared `housing/templates/housing/` folder for consistency. Added links to FAQ and About cards on home page.
+
+**Code reference**  
+- `proj_1/housing/extras/views.py` — FAQ and About views  
+- `proj_1/housing/extras/urls.py` — Routing  
+- `proj_1/housing/templates/housing/faq.html`, `about.html` — Expanded content with NT-specific guidance  
+- `proj_1/housing/templates/housing/home.html` — Added FAQ and About cards
+
+**Consequences**  
+- **Pros:** Better separation of concerns; easier to maintain content-rich pages; reusable extras structure for future static pages.  
+- **Cons:** Slight extra folder nesting; minor URL configuration overhead.  
 - **Cons:** Introduces a new layer of abstraction and an additional file to manage in the app.
 
 
