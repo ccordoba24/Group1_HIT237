@@ -1,35 +1,56 @@
 {% extends "housing/base.html" %}
 
 {% block content %}
-    <div class="container">
-        <h2>Frequently Asked Questions</h2>
-        <p>Below are common questions and answers about the NT Housing Maintenance System.</p>
+<div class="container">
+    <h1>Frequently Asked Questions</h1>
 
-        <ol>
-            <li>
-                <strong>How does this site run?</strong>
-                <div>Ans: The NT Housing Authority.</div>
-            </li>
-            <li>
-                <strong>How can I reset my password?</strong>
-                <div>Ans: Follow the reset password link on the Home page.</div>
-            </li>
-            <li>
-                <strong>Do you have warranty on jobs completed?</strong>
-                <div>Ans: Although all jobs have warranty, the warranty is for the Housing Authority and not the renter.</div>
-            </li>
-            <li>
-                <strong>Do I need to sign a contract?</strong>
-                <div>Ans: No, all contracts are between the tradesman and the NT Housing Authority.</div>
-            </li>
-            <li>
-                <strong>Do I pay anything when the tradesman comes to my home?</strong>
-                <div>Ans: No, all payments are between the Housing Authority and the tradesmen involved.</div>
-            </li>
-            <li>
-                <strong>How long will I wait for the repair to be completed?</strong>
-                <div>Ans: Although times vary, most urgent work is completed in a day while non-urgent standard jobs should be completed within a month from the original request.</div>
-            </li>
-        </ol>
-    </div>
+    <p>
+        Below are common questions and answers about the NT Housing Maintenance System.
+    </p>
+
+    <h3>What is this system used for?</h3>
+    <p>
+        This system helps tenants report housing repair issues and allows staff or admin users to track, update, and manage those requests in one place.
+    </p>
+
+    <h3>Who can submit a repair request?</h3>
+    <p>
+        Logged-in users can submit repair requests for housing issues such as plumbing, doors, air conditioning, and other maintenance problems.
+    </p>
+
+    <h3>Can tenants see the progress of their repair request?</h3>
+    <p>
+        Yes. Tenants can view the status of their own repair requests, such as pending, in progress, or completed.
+    </p>
+
+    <h3>Can tenants update the repair status?</h3>
+    <p>
+        No. Tenants can view the status, but only staff or admin users can change the official repair status.
+    </p>
+
+    <h3>Can tenants add maintenance updates?</h3>
+    <p>
+        No. Maintenance updates are added by staff or admin users so the repair history stays accurate and reliable.
+    </p>
+
+    <h3>Can tenants edit their own request?</h3>
+    <p>
+        Yes. Tenants can edit basic request details, but they cannot change the repair status.
+    </p>
+
+    <h3>How can I reset my password?</h3>
+    <p>
+        Password reset is not available in this version of the system. Users should contact the system administrator if they need account help.
+    </p>
+
+    <h3>Do tenants pay anything when a tradesperson comes to the home?</h3>
+    <p>
+        No. This system is designed for housing maintenance tracking. Payment handling is not managed by tenants in the app.
+    </p>
+
+    <h3>How long will I wait for the repair to be completed?</h3>
+    <p>
+        Repair time can vary depending on urgency, staff availability, and the type of maintenance issue. Urgent issues should be handled faster than standard repairs.
+    </p>
+</div>
 {% endblock %}
