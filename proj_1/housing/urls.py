@@ -12,8 +12,6 @@ from .views import (
     MaintenanceUpdateCreateView,
     HomeView,
     RegisterView,
-    FAQView,
-    AboutView,
 )
 
 urlpatterns = [
@@ -77,17 +75,5 @@ urlpatterns = [
         "register/",
         RegisterView.as_view(),
         name="register"
-    ),
-
-    path(
-        "faq/",
-        FAQView.as_view(),
-        name="faq"
-    ),
-
-    path(
-        "about/",
-        AboutView.as_view(),
-        name="about"
     ),
 ]

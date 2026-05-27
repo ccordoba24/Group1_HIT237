@@ -50,14 +50,6 @@ class UserLoginView(LoginView):
         return reverse_lazy("dashboard")
 
 
-class FAQView(TemplateView):
-    template_name = "housing/faq.html"
-
-
-class AboutView(TemplateView):
-    template_name = "housing/about.html"
-
-
 # --- Shared Permission Query Helper ---
 
 class RepairRequestAccessMixin:
