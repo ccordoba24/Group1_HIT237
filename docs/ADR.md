@@ -3,7 +3,7 @@
 
 **Project:** Housing Repair Request Management System  
 **Repository:** https://github.com/ccordoba24/Group1_HIT237/  
-**Author:** Habiba  
+**Author:** Gaurab Gaihre   
 **Last Updated:** May 2026
 
 This living document records the key architectural and design decisions made throughout the development of the Django-based housing repair request application. Each entry explains the **context**, **alternatives considered**, the **chosen decision with rationale**, exact **code references**, and **consequences**.
