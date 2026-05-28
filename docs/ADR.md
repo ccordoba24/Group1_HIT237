@@ -713,9 +713,11 @@ We added a single stylesheet at `housing/static/housing/css/main.css` loaded fro
 - `proj_1/proj_1/settings.py` — `STATIC_URL` and `django.contrib.staticfiles`
 
 **Consequences**  
-**Pros:** Consistent UI across all pages; one place to update colours, spacing, and components; no build toolchain required.  
+**Pros:** Consistent UI across all pages; one place to update colours, spacing and components; no build toolchain required.  
 **Cons:** Custom CSS must be maintained manually; no component library out of the box.
 
 ---
 
-This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. Decisions were revisited and refined as the project evolved from basic CRUD through services, permissions, testing, authentication, and UI consistency.
+
+This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. Decisions were revisited and refined as the project evolved from basic CRUD through services, permissions, testing, authentication and UI consistency.
+
