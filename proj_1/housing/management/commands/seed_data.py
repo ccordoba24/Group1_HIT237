@@ -59,11 +59,23 @@ class Command(BaseCommand):
                 )
             )
 
-        # Create category
+        # Create categories
 
-        category, _ = Category.objects.get_or_create(
-            name="Plumbing"
-        )
+        categories_to_create = [
+            "Electrical",
+            "Plumbing",
+            "Fittings",
+            "Windows and Doors",
+            "Locksmith",
+            "Roofing",
+            "Walls and Ceilings",
+        ]
+
+        for category_name in categories_to_create:
+            Category.objects.get_or_create(name=category_name)
+
+        # Get Plumbing category for the sample repair request
+        category = Category.objects.get(name="Plumbing")
 
         # Create community
 
