@@ -86,15 +86,30 @@ class Command(BaseCommand):
             }
         )
 
-        # Create dwelling
+        # Create multiple dwellings with different types
+        dwelling_data = [
+            {"code": "D001", "address": "House 1", "type": "house"},
+            {"code": "D002", "address": "House 2", "type": "unit"},
+            {"code": "D003", "address": "House 3", "type": "town_house"},
+            {"code": "D004", "address": "House 4", "type": "granny_flat"},
+            {"code": "D005", "address": "House 5", "type": "room"},
+        ]
 
-        dwelling, _ = Dwelling.objects.get_or_create(
-            dwelling_code="D001",
-            defaults={
-                "community": community,
-                "address": "House 1"
-            }
-        )
+        for data in dwelling_data:
+            Dwelling.objects.get_or_create(
+                dwelling_code=data["code"],
+                defaults={
+                    "community": community,
+                    "address": data["address"],
+                    "dwelling_type": data["type"],
+                }
+            )
+
+        # Get the first dwelling (House) for the sample repair request
+        dwelling = Dwelling.objects.get(dwelling_code="D001")
+        
+        # Clean up any 'test' dwellings
+        Dwelling.objects.filter(address__icontains="test").delete()
 
         # Create tenant
 

@@ -12,12 +12,25 @@ class Community(models.Model):
 
 
 class Dwelling(models.Model):
+    DWELLING_TYPE_CHOICES = [
+        ("house", "House"),
+        ("unit", "Unit"),
+        ("town_house", "Town House"),
+        ("granny_flat", "Granny Flat"),
+        ("room", "Room"),
+    ]
+
     community = models.ForeignKey(Community, on_delete=models.CASCADE)
     address = models.CharField(max_length=255)
     dwelling_code = models.CharField(max_length=50)
+    dwelling_type = models.CharField(
+        max_length=20,
+        choices=DWELLING_TYPE_CHOICES,
+        default="unit",
+    )
 
     def __str__(self):
-        return f"{self.address} [{self.dwelling_code}]"
+        return f"{self.address} [{self.dwelling_code}] - {self.get_dwelling_type_display()}"
 
     def open_requests_count(self):
         return self.repairrequest_set.exclude(status="completed").count()
