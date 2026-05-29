@@ -718,6 +718,30 @@ We added a single stylesheet at `housing/static/housing/css/main.css` loaded fro
 
 ---
 
+### ADR 28 : Refinement of Domain Models and Dynamic Input Handling
+
+**Status:** Accepted (Refines ADR 1 and ADR 2)
+
+**Context**  
+As we moved from prototyping to a production-ready system, the generic data models and forms (ADR 1, ADR 2) became insufficient. Specifically, we needed better asset classification for dwellings and stricter field-level security for repair requests based on user roles (staff vs. tenant).
+
+**Alternatives considered**  
+- **Continue with generic forms**: Simpler code but allowed tenants to potentially edit their own status or internal staff notes.  
+- **Overwriting initial ADRs**: Faster documentation but loses the history of the project’s evolution and the rationale behind later improvements.
+
+**Decision**  
+We implemented **Granular Domain Modelling** by adding a `dwelling_type` categorization to the `Dwelling` model. Simultaneously, we replaced the single `RepairRequestForm` with a **Three-Tier Form Architecture** (`Create`, `UserUpdate`, `StaffUpdate`). This ensures that only staff can access the "Status" and "Management" fields, while tenants are restricted to basic request details.
+
+**Code reference**  
+- `proj_1/housing/models.py:15–33` — Dwelling Type categorization refinement.  
+- `proj_1/housing/forms.py:8–42` — Three-tier form implementation.  
+- `proj_1/housing/views.py:161–165` — View-level logic for role-based form selection.
+
+**Consequences**  
+- **Pros:** Improved data classification; better security at the UI layer; demonstrates clear architectural progression.  
+- **Cons:** Requires maintaining three form variants instead of one; slightly more logic in the view controllers.
+
+---
 
 This ADR document reflects genuine consideration of Django’s design philosophies and trade-offs. Decisions were revisited and refined as the project evolved from basic CRUD through services, permissions, testing, authentication and UI consistency.
 
