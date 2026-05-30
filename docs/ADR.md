@@ -19,6 +19,9 @@ The commit history of this file demonstrates how decisions evolved as the projec
 **Context**  
 We needed to model Communities, Dwellings, Tenants, Categories, Repair Requests, and Maintenance Updates in a maintainable way that supports efficient querying and preserves data relationships.
 
+**Categories**  
+The following categories are available for repair requests: Electrical, Plumbing, Fittings, Windows and Doors, Locksmith, Roofing, Walls and Ceilings, and Other (for issues not covered by other categories).
+
 **Alternatives considered**  
 - **Single model with JSON blobs**: Simple initial setup, but searching and maintaining relationships inside JSON becomes difficult and loses database integrity.  
 - **Partially denormalised models** (e.g., duplicating address data): Fewer joins but leads to data inconsistency when values need updating in multiple places.

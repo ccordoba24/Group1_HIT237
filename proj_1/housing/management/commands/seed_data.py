@@ -69,6 +69,7 @@ class Command(BaseCommand):
             "Locksmith",
             "Roofing",
             "Walls and Ceilings",
+            "Other",
         ]
 
         for category_name in categories_to_create:

@@ -1,6 +1,6 @@
 # NT Housing Maintenance System - Entity Relationship Diagram
 
-## ERD Class Diagram
+## ERD Class Diagram by Mermaid tool
 
 ```mermaid
 erDiagram
@@ -85,16 +85,16 @@ erDiagram
 Django built-in User model for authentication.
 
 ### COMMUNITY
-Represents a housing community or region.
+Represents a remote housing community.
 
 ### DWELLING
-A residential unit within a community (house, unit, town house, etc.).
+A residential unit within a community (house, unit, town house, granny flat, room ).
 
 ### TENANT
 Links a User to a Dwelling (one tenant per user).
 
 ### CATEGORY
-Categories for repair requests (e.g., Electrical, Plumbing, etc.).
+Categories for repair requests (Electrical, Plumbing, Fittings, Windows and door, Locksmith, Roofing, Walls and Ceilings).
 
 ### REPAIR_REQUEST
 Main model for tracking repair requests with status tracking (pending, in_progress, completed).
