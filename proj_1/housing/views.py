@@ -139,6 +139,11 @@ class RepairRequestCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("repair-request-list")
     login_url = "/login/"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         self.object = RepairRequestService.create_repair_request(
             form=form,
@@ -163,6 +168,11 @@ class RepairRequestUpdateView(LoginRequiredMixin, RepairRequestAccessMixin, Upda
             return RepairRequestStaffUpdateForm
 
         return RepairRequestUserUpdateForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         self.object = RepairRequestService.update_repair_request(

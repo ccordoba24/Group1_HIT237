@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import RepairRequest, MaintenanceUpdate
+from .models import RepairRequest, MaintenanceUpdate, Tenant
 
 
 class RepairRequestCreateForm(forms.ModelForm):
@@ -16,6 +16,19 @@ class RepairRequestCreateForm(forms.ModelForm):
             "tenant",
         ]
 
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Filter tenant dropdown to show only the logged-in user's tenant
+        if user and user.is_authenticated:
+            try:
+                user_tenant = Tenant.objects.get(user=user)
+                self.fields['tenant'].queryset = Tenant.objects.filter(user=user)
+                self.fields['tenant'].initial = user_tenant
+            except Tenant.DoesNotExist:
+                # If user has no tenant, show all tenants
+                pass
+
 
 class RepairRequestUserUpdateForm(forms.ModelForm):
     class Meta:
@@ -27,6 +40,18 @@ class RepairRequestUserUpdateForm(forms.ModelForm):
             "dwelling",
             "tenant",
         ]
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Filter tenant dropdown to show only the logged-in user's tenant
+        if user and user.is_authenticated:
+            try:
+                user_tenant = Tenant.objects.get(user=user)
+                self.fields['tenant'].queryset = Tenant.objects.filter(user=user)
+            except Tenant.DoesNotExist:
+                # If user has no tenant, show all tenants
+                pass
 
 
 class RepairRequestStaffUpdateForm(forms.ModelForm):
@@ -40,6 +65,10 @@ class RepairRequestStaffUpdateForm(forms.ModelForm):
             "dwelling",
             "tenant",
         ]
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Staff can see all tenants, no filtering needed
 
 
 class MaintenanceUpdateForm(forms.ModelForm):
