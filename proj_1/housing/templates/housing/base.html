@@ -40,9 +40,17 @@
     </main>
 
     <footer class="site-footer">
-        NT Housing Maintenance System &mdash;
-        <a href="{% url 'faq' %}">Help</a> &middot;
-        <a href="{% url 'about' %}">About</a>
+        <div class="footer-container">
+            <div class="footer-left">
+                NT Housing Maintenance System &mdash;
+                <a href="{% url 'home' %}">Home</a> &middot;
+                <a href="{% url 'faq' %}">Help</a> &middot;
+                <a href="{% url 'about' %}">About</a>
+            </div>
+            <div class="footer-right">
+                &copy; 2026 CDU
+            </div>
+        </div>
     </footer>
 </body>
 </html>
