@@ -23,7 +23,7 @@ Role-Based Task Allocation
 
 The team utilizes predefined roles to clarify individual responsibility as follows:
 
-Architect: (responsible for system architecture, Github management, and integration) - Carlos Cordoba
+Architect: (responsible for system architecture, GitHub management, and integration) - Carlos Cordoba
 
 Documentation Lead: (responsible for report preparation and Architectural Decision Records preparation) - Gaurab Gaihre
 
@@ -217,3 +217,48 @@ Before making major decisions, the group will:
 * GitHub Uploads: Individual work must be posted 5 days before any deadline.
 * Conflict Rule: If a member is silent for over several days, we document it on Teams and notify Shantanu Barua on MS Teams.
 
+# Section 8: Updated Project Plan for Assessment 4
+
+For Assessment 4, the team continued with the role structure and working process agreed in the earlier group contract. The same general responsibilities were maintained, but the work was extended to match the requirements of the final Django project submission.
+
+The team continued using Microsoft Teams for communication and GitHub for code, documentation, and progress tracking. The main focus for this stage was to improve the Django application from the earlier assessment by adding authentication, authorization, service-layer logic, testing, documentation updates, and final submission checks.
+
+## Continued Team Responsibilities
+
+- Carlos Cordoba continued in the architecture and integration role, supporting GitHub organisation, system structure, team coordination, front-end layout and presentation, and final integration checks.
+
+- Gaurab Gaihre continued in the documentation role, supporting report preparation, ADR updates, architectural explanation, and final documentation checks.
+
+- Pralin Dhungana continued in the feature development role, supporting Django application features including authentication, role-based permissions, request workflows, service-layer logic, testing, and README setup documentation.
+
+- Umme Habiba continued in the history and tracking role, supporting commit tracking, progress documentation, contribution evidence, review support, and final submission checklist review.
+
+## Assessment 4 Work Plan
+
+The team planned and completed the following work for the final project stage:
+
+- Continued development from the Assessment 2 Django application.
+- Added login, logout, and registration workflows.
+- Added role-based access control for admin/staff users and normal users.
+- Improved the repair request workflow, including request creation, listing, detail view, and editing.
+- Restricted repair status editing to staff/admin users.
+- Restricted maintenance update creation to staff/admin users.
+- Added dashboard metrics to summarise request progress.
+- Added service-layer logic to separate business rules from views.
+- Added custom permission checks to centralise authorization decisions.
+- Added custom exceptions to make business rule failures clearer.
+- Added tests for models, QuerySets, services, views, and permission boundaries.
+- Updated the README with setup steps, demo login credentials, seed data instructions, and test commands.
+- Updated ADRs and documentation to reflect the final design decisions.
+
+## Final Submission Checks
+
+Before submission, the team checked that:
+
+- The Django application runs successfully.
+- Demo users can log in after running `python manage.py seed_data`.
+- The test suite passes using `python manage.py test housing`.
+- The README includes setup steps, demo credentials, and troubleshooting notes.
+- GitHub contains the latest development and documentation updates.
+- The group contract, project brief, ADRs, README, and related documentation are included in the repository.
+- The repository is pushed and ready for final submission.
