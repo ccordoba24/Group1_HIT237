@@ -616,9 +616,16 @@ We expanded the Django test suite into five focused test classes:
 **Code reference**  
 - `proj_1/housing/tests.py:11–502` — Complete test suite
 
+
+**Scope Exclusions and Rationale**
+- **End-to-End (E2E) Browser Testing**: We excluded UI automation tools (like Selenium or Cypress) because they add significant setup and maintenance overhead for a stable, server-rendered application. Visual correctness is verified during manual user acceptance testing.
+- **Performance/Load Testing**: High-concurrency stress testing was deemed out of scope for the current small-scale tenant base, as the focus was on functional correctness and security.
+- **Visual Regression Testing**: CSS and layout regressions are handled through manual review of the shared `base.html` template rather than automated image comparison.
+
 **Consequences**  
-**Pros:** High confidence per layer; security rules verified automatically.  
-**Cons:** Tests must be maintained when models or services change.
+**Pros:** High confidence in backend business logic and security rules; automated verification of all architectural layers; minimal CI/CD complexity.  
+**Cons:** Front-end visual changes still require manual verification; tests must be maintained alongside model changes.
+
 
 ---
 
